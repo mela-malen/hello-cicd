@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}You're In! - CM Corp{% endblock %}
+
+{% block content %}
+<section class="thank-you">
+  <div class="thank-you__container">
+    <div class="thank-you__icon">&#10003;</div>
+    <h1 class="thank-you__title">You're In, {{ name }}!</h1>
+    <p class="thank-you__message">
+      We've got your subscription locked in for:
+    </p>
+    <p class="thank-you__email">{{ email }}</p>
+    <p class="thank-you__note">
+      Get ready &mdash; your first dose of fitness fuel is on the way!
+    </p>
+    <a href="{{ url_for('public.index') }}" class="btn btn--primary">
+      Back to Home
+    </a>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .thank-you {
+      padding: 4rem 2rem;
+      text-align: center;
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .thank-you__container {
+      background: linear-gradient(135deg, rgba(26, 10, 46, 0.9), rgba(45, 10, 78, 0.9));
+      padding: 3rem;
+      border-radius: 1rem;
+      border: 2px solid var(--neon-purple);
+      box-shadow:
+          0 0 20px rgba(176, 38, 255, 0.3),
+          0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+  }
+
+  .thank-you__icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-yellow));
+      color: #1a0a2e;
+      font-size: 2.5rem;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      box-shadow:
+          0 0 20px rgba(255, 20, 147, 0.5),
+          0 0 40px rgba(255, 230, 0, 0.2);
+      animation: pulse 2s ease-in-out infinite;
+  }
+
+  .thank-you__title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      color: var(--neon-yellow);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow:
+          0 0 10px var(--neon-yellow),
+          0 0 30px var(--neon-pink);
+  }
+
+  .thank-you__message {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+  }
+
+  .thank-you__email {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--neon-pink);
+      margin-bottom: 1rem;
+      word-break: break-all;
+      text-shadow: 0 0 10px rgba(255, 20, 147, 0.4);
+  }
+
+  .thank-you__note {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2rem;
+      font-weight: 500;
+  }
+</style>
+{% endblock %}

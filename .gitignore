@@ -1,4 +1,9 @@
 .venv/
+venv/
 __pycache__/
 *.pyc
+*.py[cod]
+.vscode/
+.idea/
+.DS_Store
 .azure-config
