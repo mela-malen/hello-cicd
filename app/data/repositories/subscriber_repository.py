@@ -1,10 +1,12 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 
 @dataclass
 class Subscriber:
     email: str
     name: str
+    subscribed_at: datetime = field(default_factory=datetime.now)
 
 
 class SubscriberRepository:
@@ -28,4 +30,5 @@ class SubscriberRepository:
         Returns:
             List of all Subscriber instances
         """
-        return Subscriber.query.order_by(Subscriber.subscribed_at.desc()).all()
+        subscribers = list(self._subscribers.values())
+        return sorted(subscribers, key=lambda s: s.subscribed_at, reverse=True)

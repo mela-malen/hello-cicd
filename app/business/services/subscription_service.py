@@ -54,4 +54,4 @@ class SubscriptionService:
         Returns:
             List of all Subscriber instances, newest first
         """
-        return self.repository.get_all()
+        return self._repository.get_all()
