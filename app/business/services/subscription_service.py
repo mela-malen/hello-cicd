@@ -44,3 +44,14 @@ class SubscriptionService:
         if not name or not name.strip():
             return "Subscriber"
         return name.strip()
+
+    def get_all_subscribers(self):
+        """
+        Get all subscribers.
+
+        Delegates to the repository for data access.
+
+        Returns:
+            List of all Subscriber instances, newest first
+        """
+        return self.repository.get_all()

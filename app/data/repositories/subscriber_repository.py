@@ -20,3 +20,12 @@ class SubscriberRepository:
 
     def exists(self, email: str) -> bool:
         return email in self._subscribers
+
+    def get_all(self):
+        """
+        Get all subscribers ordered by subscription date (newest first).
+
+        Returns:
+            List of all Subscriber instances
+        """
+        return Subscriber.query.order_by(Subscriber.subscribed_at.desc()).all()
