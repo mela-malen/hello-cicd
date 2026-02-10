@@ -19,6 +19,7 @@ Practical guides for common tasks and workflows.
 |------|-------------|
 | [Contributing](guides/contributing.md) | Contribution workflow |
 | [Docker](guides/docker.md) | Docker usage guide |
+| [Custom Domain](guides/domain-setup.md) | Configure custom domains |
 | [Troubleshooting](guides/troubleshooting.md) | Common issues & solutions |
 
 ## Quick Links
