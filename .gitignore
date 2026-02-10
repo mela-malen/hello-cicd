@@ -7,3 +7,6 @@ __pycache__/
 .idea/
 .DS_Store
 .azure-config
+.azure-config/
+.env.local
+*.local
