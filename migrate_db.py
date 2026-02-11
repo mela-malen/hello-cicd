@@ -3,6 +3,14 @@
 import os
 import sys
 
+# Set environment variables for MSSQL connection
+os.environ["DB_TYPE"] = "mssql"
+os.environ["DB_SERVER"] = os.environ.get("DB_SERVER", "deplojdb.database.windows.net")
+os.environ["DB_NAME"] = os.environ.get("DB_NAME", "deplojdb1")
+os.environ["DB_USERNAME"] = os.environ.get("DB_USERNAME", "deplojadmin@deplojdb")
+os.environ["DB_PASSWORD"] = os.environ.get("DB_PASSWORD", "")
+
+
 def run_migration():
     """Run database migration."""
     from app import create_app
