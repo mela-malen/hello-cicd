@@ -280,6 +280,7 @@ class Config:
 
 ## Related Documentation
 
+- [Visitor Journey](../visitor-journey.md) | User experience flow & conversion funnel
 - [API Reference](api.md)
 - [Data Models](data-models.md)
 - [Deployment Guide](../deployment/azure.md)

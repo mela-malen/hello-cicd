@@ -15,6 +15,7 @@ nav_order: 1
 |---------|-------------|
 | [Overview](docs/overview.md) | Project introduction & key features |
 | [Architecture](docs/architecture/overview.md) | System design & component diagrams |
+| [Visitor Journey](docs/visitor-journey.md) | User experience flow & conversion funnel |
 | [Development Guide](docs/development/setup.md) | Setup instructions for all platforms |
 | [Deployment](docs/deployment/azure.md) | Azure deployment & CI/CD pipeline |
 | [API Reference](docs/architecture/api.md) | Endpoints & data models |
