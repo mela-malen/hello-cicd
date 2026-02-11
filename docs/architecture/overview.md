@@ -13,62 +13,96 @@ parent: Architecture
 
 ```mermaid
 graph TD
-    subgraph Users["🌍 Users & Traffic"]
+    subgraph Users["Users"]
         Browser["Web Browser"]
-        Mobile["Mobile Apps"]
-        API["API Clients"]
+        Mobile["Mobile Device"]
     end
 
-    subgraph Azure["☁️ Azure Cloud"]
-        subgraph Network["🛡️ Network Layer"]
-            FrontDoor["Azure Front Door"]
-            WAF["WAF / DDoS Protection"]
+    subgraph Azure["Azure Cloud - Sweden Central"]
+        subgraph Network["Network"]
+            CustomDomain["Custom Domain\ndeploj.se"]
         end
 
-        subgraph Compute["⚙️ Compute Layer"]
-            ACA["Azure Container Apps"]
-            subgraph Pods["📦 Container Pods"]
-                Pod1["Pod 1"]
-                Pod2["Pod 2"]
-                PodN["Pod N"]
-            end
+        subgraph Compute["Compute"]
+            ACA["Azure Container Apps\nca-hello-cicd"]
+            Container["hello-cicd Container"]
         end
 
-        subgraph Storage["💾 Storage Layer"]
-            ACR["Container Registry"]
-            SQL["Azure SQL"]
-            KeyVault["Key Vault"]
+        subgraph Registry["Container Registry"]
+            ACR["acrhellocicda593ac50\n.azurecr.io"]
         end
 
-        subgraph Observability["📊 Observability"]
-            LogAnalytics["Log Analytics"]
-            Monitor["Azure Monitor"]
+        subgraph Storage["Data"]
+            SQL["Azure SQL Database\ndeplojdb1"]
+        end
+
+        subgraph Observability["Observability"]
+            LogAnalytics["Log Analytics\nworkspace-rghellocicd"]
         end
     end
 
-    subgraph CI["🔄 CI/CD"]
-        GitHub["GitHub Actions"]
+    subgraph CI["CI/CD"]
+        GitHub["GitHub Actions\nBuild and Deploy"]
     end
 
-    Users -->|HTTPS| Network
-    Network -->|Route| Compute
-    Compute -->|Store| Storage
-    Compute -->|Logs| Observability
-    CI -->|Deploy| Compute
-    CI -->|Images| Storage
+    Users -->|HTTPS| CustomDomain
+    CustomDomain --> ACA
+    ACA --> Container
+    Container --> ACR
+    Container --> SQL
+    Container --> LogAnalytics
+    GitHub -->|Deploy| ACA
+    GitHub -->|Push Image| ACR
 
-    classDef azure fill:#0078d4,stroke:#fff,color:#fff
-    classDef compute fill:#00bcf2,stroke:#fff,color:#000
-    classDef storage fill:#107c10,stroke:#fff,color:#fff
-    classDef network fill:#5c2d91,stroke:#fff,color:#fff
-    classDef users fill:#d83b01,stroke:#fff,color:#fff
+    classDef azure fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
+    classDef compute fill:#00bcf2,stroke:#fff,stroke-width:2px,color:#000
+    classDef storage fill:#107c10,stroke:#fff,stroke-width:2px,color:#fff
+    classDef network fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
+    classDef users fill:#d83b01,stroke:#fff,stroke-width:2px,color:#fff
 
     class Azure,Network,Compute,Storage,Observability azure
-    class ACA,Pods,Pod1,Pod2,PodN compute
-    class ACR,SQL,KeyVault storage
-    class FrontDoor,WAF network
-    class Users,Browser,Mobile,API users
+    class ACA,Container compute
+    class ACR,SQL storage
+    class CustomDomain network
+    class Users,Browser,Mobile users
 ```
+
+---
+
+### Real Azure Resources
+
+| Resource | Name | Type | Region |
+|----------|------|------|--------|
+| Resource Group | `rg-hello-cicd` | Resource Group | Sweden Central |
+| Container App | `ca-hello-cicd` | Microsoft.App/containerApps | Sweden Central |
+| Container App Environment | `cae-hello-cicd` | Microsoft.App/managedEnvironments | Sweden Central |
+| Container Registry | `acrhellocicda593ac50` | Microsoft.ContainerRegistry | Sweden Central |
+| SQL Server | `deplojdb` | Microsoft.Sql/servers | Sweden Central |
+| SQL Database | `deplojdb1` | Microsoft.Sql/servers/databases | Sweden Central |
+| Log Analytics | `workspace-rghellocicd` | Microsoft.OperationalInsights | Sweden Central |
+| Managed Identity | `id-hello-cicd-deploy` | Microsoft.ManagedIdentity | Sweden Central |
+| Custom Domain | `deploj.se` | Custom Domain | DNS |
+
+### Container App Configuration
+
+| Setting | Value |
+|---------|-------|
+| FQDN | `ca-hello-cicd.calmsky-c5b24015.swedencentral.azurecontainerapps.io` |
+| Target Port | 5000 |
+| CPU | 0.5 |
+| Memory | 1Gi |
+| Max Replicas | 10 |
+| Min Replicas | null (auto-scale) |
+| Active Revisions | Single |
+
+### Database Configuration
+
+| Setting | Value |
+|---------|-------|
+| Server | `deplojdb.database.windows.net` |
+| Database | `deplojdb1` |
+| SKU | `GP_S_Gen5` |
+| Status | Online |
 
 ---
 

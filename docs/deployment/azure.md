@@ -13,56 +13,44 @@ parent: Deployment
 
 ```mermaid
 flowchart TB
-    subgraph GitHub["GitHub Repository"]
+    subgraph GitHub["GitHub Repository\nmela-malen/hello-cicd"]
         Code["Source Code"]
         Actions["GitHub Actions"]
     end
 
-    subgraph Azure["Azure Cloud"]
+    subgraph Azure["Azure Cloud - Sweden Central"]
         subgraph Registry["Container Registry"]
-            ACR["Azure Container Registry"]
-            Images["Docker Images"]
+            ACR["Azure Container Registry\nacrhellocicda593ac50"]
         end
 
         subgraph Compute["Compute"]
-            ACA["Azure Container Apps"]
-            Revisions["Revisions"]
-            Pods["Pods"]
-        end
-
-        subgraph Network["Network & Security"]
-            FrontDoor["Front Door"]
-            WAF["WAF"]
-            KeyVault["Key Vault"]
+            CAE["Container Apps Environment\ncae-hello-cicd"]
+            ACA["Container App\nca-hello-cicd"]
+            Custom["Custom Domain\ndeploj.se"]
         end
 
         subgraph Data["Data"]
-            SQL["Azure SQL Database"]
+            SQL["Azure SQL\ndeplojdb / deplojdb1"]
         end
 
         subgraph Monitoring["Monitoring"]
-            LogAnalytics["Log Analytics"]
+            LA["Log Analytics\nworkspace-rghellocicd"]
         end
     end
 
     Code -->|Push| Actions
     Actions -->|Build| ACR
     ACR -->|Pull| ACA
-    ACA -->|Route| FrontDoor
-    FrontDoor -->|Protect| WAF
-    ACA -->|Secrets| KeyVault
-    ACA -->|Connect| SQL
-    ACA -->|Logs| LogAnalytics
+    ACA --> Custom
+    ACA --> SQL
+    ACA --> LA
 
     classDef azure fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
     classDef compute fill:#00bcf2,stroke:#fff,stroke-width:2px,color:#000
     classDef storage fill:#107c10,stroke:#fff,stroke-width:2px,color:#fff
-    classDef network fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
 
     class Azure,Registry,Compute,Data,Monitoring azure
-    class ACR,Images,ACA,Revisions,Pods compute
-    class SQL,LogAnalytics storage
-    class FrontDoor,WAF,KeyVault network
+    class ACR,CAE,ACA,Custom,SQL,LA compute
     class GitHub,Code,Actions github
 ```
 
@@ -70,32 +58,76 @@ flowchart TB
 
 ## Azure Resources
 
-| Resource | Purpose | Pricing Tier |
-|----------|---------|--------------|
-| Azure Container Registry | Docker image storage | Basic |
-| Azure Container Apps | Application hosting | Consumption |
-| Azure Front Door | Load balancing | Standard |
-| Log Analytics | Monitoring | Pay-as-you-go |
-| Key Vault | Secrets management | Standard |
+| Resource | Name | Type | Location | Status |
+|----------|------|------|----------|--------|
+| Resource Group | `rg-hello-cicd` | Resource Group | Sweden Central | Succeeded |
+| Container Registry | `acrhellocicda593ac50` | Microsoft.ContainerRegistry/registries | Sweden Central | Succeeded |
+| Container Apps Environment | `cae-hello-cicd` | Microsoft.App/managedEnvironments | Sweden Central | Succeeded |
+| Container App | `ca-hello-cicd` | Microsoft.App/containerApps | Sweden Central | Running |
+| SQL Server | `deplojdb` | Microsoft.Sql/servers | Sweden Central | Succeeded |
+| SQL Database | `deplojdb1` | Microsoft.Sql/servers/databases | Sweden Central | Online |
+| Log Analytics | `workspace-rghellocicd` | Microsoft.OperationalInsights/workspaces | Sweden Central | Succeeded |
+| Managed Identity | `id-hello-cicd-deploy` | Microsoft.ManagedIdentity/userAssignedIdentities | Sweden Central | Succeeded |
 
 ---
 
-## Prerequisites
+## Container App Configuration
 
-### Required Azure CLI Version
-
-```bash
-az --version
-# azure-cli                         2.50.0
+```json
+{
+  "name": "ca-hello-cicd",
+  "location": "Sweden Central",
+  "environmentId": "/subscriptions/.../managedEnvironments/cae-hello-cicd",
+  "configuration": {
+    "ingress": {
+      "fqdn": "ca-hello-cicd.calmsky-c5b24015.swedencentral.azurecontainerapps.io",
+      "targetPort": 5000,
+      "external": true,
+      "customDomains": [{
+        "name": "deploj.se",
+        "bindingType": "SniEnabled"
+      }]
+    },
+    "registries": [{
+      "server": "acrhellocicda593ac50.azurecr.io",
+      "username": "acrhellocicda593ac50"
+    }]
+  },
+  "template": {
+    "containers": [{
+      "image": "acrhellocicda593ac50.azurecr.io/hello-cicd:<sha>",
+      "resources": {
+        "cpu": 0.5,
+        "memory": "1Gi"
+      },
+      "env": [
+        {"name": "DB_SERVER", "value": "deplojdb.database.windows.net"},
+        {"name": "DB_NAME", "value": "deplojdb1"},
+        {"name": "DB_USERNAME", "value": "deplojadmin"},
+        {"name": "DB_TYPE", "value": "mssql"}
+      ]
+    }],
+    "scale": {
+      "maxReplicas": 10,
+      "cooldownPeriod": 300,
+      "pollingInterval": 30
+    }
+  }
+}
 ```
 
-### Required Permissions
+---
 
-| Role | Scope | Purpose |
-|------|-------|---------|
-| Contributor | Resource Group | Deploy resources |
-| AcrPush | ACR | Push images |
-| Owner | Subscription | Create resources |
+## Custom Domain
+
+| Domain | Binding Type | Certificate |
+|--------|--------------|-------------|
+| `deploj.se` | SniEnabled | Managed by Azure |
+
+**DNS Record:**
+```
+deploj.se -> CNAME -> ca-hello-cicd.calmsky-c5b24015.swedencentral.azurecontainerapps.io
+```
 
 ---
 
