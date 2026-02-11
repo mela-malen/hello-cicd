@@ -14,8 +14,8 @@ def create_app(config_name: str | None = None) -> Flask:
         static_folder="presentation/static",
     )
 
-    # Load configuration
-    app.config.from_object(config[config_name])
+    # Load configuration (instantiate dataclass)
+    app.config.from_object(config[config_name]())
 
     # Initialize database
     db.init_app(app)

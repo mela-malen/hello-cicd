@@ -1,26 +1,25 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+def get_database_uri() -> str:
+    db_server = os.environ.get("DB_SERVER", "")
+    db_name = os.environ.get("DB_NAME", "")
+    db_username = os.environ.get("DB_USERNAME", "")
+    db_password = os.environ.get("DB_PASSWORD", "")
+
+    if db_server:
+        params = "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+        return f"mssql+pyodbc://{db_username}:{db_password}@{db_server}/{db_name}?{params}"
+    return "sqlite:///:memory:"
 
 
 @dataclass
 class Config:
-    SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key")
+    SECRET_KEY: str = field(default_factory=lambda: os.environ.get("SECRET_KEY", "dev-secret-key"))
     DEBUG: bool = False
     TESTING: bool = False
-
-    # Database configuration
-    DB_SERVER: str = os.environ.get("DB_SERVER", "")
-    DB_NAME: str = os.environ.get("DB_NAME", "")
-    DB_USERNAME: str = os.environ.get("DB_USERNAME", "")
-    DB_PASSWORD: str = os.environ.get("DB_PASSWORD", "")
-
-    @property
-    def SQLALCHEMY_DATABASE_URI(self) -> str:
-        if self.DB_SERVER:
-            params = "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
-            return f"mssql+pyodbc://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_SERVER}/{self.DB_NAME}?{params}"
-        return "sqlite:///:memory:"
-
+    SQLALCHEMY_DATABASE_URI: str = field(default_factory=get_database_uri)
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
 
