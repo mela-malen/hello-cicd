@@ -11,21 +11,59 @@ parent: Deployment
 
 ## Deployment Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           CI/CD PIPELINE                                      │
-│                                                                              │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐             │
-│  │  GitHub  │───▶│  Build   │───▶│  Push to │───▶│ Deploy   │             │
-│  │  Push    │    │  Docker  │    │   ACR    │    │ to ACA   │             │
-│  └──────────┘    └──────────┘    └──────────┘    └──────────┘             │
-│       │                                                    │                 │
-│       ▼                                                    ▼                 │
-│  ┌──────────┐                                         ┌──────────┐        │
-│  │ GitHub   │                                         │  Health  │        │
-│  │ Actions  │                                         │  Check   │        │
-│  └──────────┘                                         └──────────┘        │
-└─────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph GitHub["GitHub Repository"]
+        Code["Source Code"]
+        Actions["GitHub Actions"]
+    end
+
+    subgraph Azure["Azure Cloud"]
+        subgraph Registry["Container Registry"]
+            ACR["Azure Container Registry"]
+            Images["Docker Images"]
+        end
+
+        subgraph Compute["Compute"]
+            ACA["Azure Container Apps"]
+            Revisions["Revisions"]
+            Pods["Pods"]
+        end
+
+        subgraph Network["Network & Security"]
+            FrontDoor["Front Door"]
+            WAF["WAF"]
+            KeyVault["Key Vault"]
+        end
+
+        subgraph Data["Data"]
+            SQL["Azure SQL Database"]
+        end
+
+        subgraph Monitoring["Monitoring"]
+            LogAnalytics["Log Analytics"]
+        end
+    end
+
+    Code -->|Push| Actions
+    Actions -->|Build| ACR
+    ACR -->|Pull| ACA
+    ACA -->|Route| FrontDoor
+    FrontDoor -->|Protect| WAF
+    ACA -->|Secrets| KeyVault
+    ACA -->|Connect| SQL
+    ACA -->|Logs| LogAnalytics
+
+    classDef azure fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
+    classDef compute fill:#00bcf2,stroke:#fff,stroke-width:2px,color:#000
+    classDef storage fill:#107c10,stroke:#fff,stroke-width:2px,color:#fff
+    classDef network fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
+
+    class Azure,Registry,Compute,Data,Monitoring azure
+    class ACR,Images,ACA,Revisions,Pods compute
+    class SQL,LogAnalytics storage
+    class FrontDoor,WAF,KeyVault network
+    class GitHub,Code,Actions github
 ```
 
 ---

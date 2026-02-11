@@ -11,26 +11,62 @@ parent: Deployment
 
 ## Pipeline Flow
 
-```
-┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│ Commit   │──▶│ Build    │──▶│ Test     │──▶│ Push     │──▶│ Deploy   │
-│ to Main  │    │ Docker   │    │ Suite    │    │ to ACR   │    │ to ACA   │
-└──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘
-                                          │                 │
-                                          ▼                 ▼
-                                    ┌──────────┐      ┌──────────┐
-                                    │ GitHub   │      │ Health   │
-                                    │ Release  │      │ Verify   │
-                                    └──────────┘      └──────────┘
+```mermaid
+flowchart TD
+    subgraph Triggers["🚀 Triggers"]
+        PushMain["Push to Main"]
+        PushRelease["Push to release/*"]
+        PR["Pull Request"]
+    end
+
+    subgraph Build["📦 Build Stage"]
+        Checkout["Checkout"]
+        Install["Install Deps"]
+        Lint["Lint & Type Check"]
+        Test["Run Tests"]
+        Docker["Build Docker Image"]
+        Scan["Security Scan"]
+    end
+
+    subgraph Push["📤 Push Stage"]
+        Tag["Tag Image"]
+        PushACR["Push to ACR"]
+    end
+
+    subgraph Deploy["🚀 Deploy Stage"]
+        Update["Update ACA"]
+        Health["Health Check"]
+        Verify["Verify"]
+    end
+
+    subgraph Release["🏷️ Release Stage"]
+        ReleaseNotes["Create Release"]
+        TagGit["Git Tag"]
+    end
+
+    Triggers --> Build
+    Build --> Push
+    Push --> Deploy
+    Deploy -->|Success| Release
+    Deploy -->|Fail| Alert["Alert & Rollback"]
+
+    classDef trigger fill:#d83b01,stroke:#fff,stroke-width:2px,color:#fff
+    classDef stage fill:#1a1a2e,stroke:#00ffff,stroke-width:2px,color:#fff
+    classDef decision fill:#5c2d91,stroke:#ffff00,stroke-width:2px,color:#fff
+
+    class Triggers trigger
+    class Build,Push,Deploy,Release stage
+    class Alert decision
 ```
 
-## Triggers
+## Pipeline Triggers
 
 | Event | Branch | Action |
 |-------|--------|--------|
 | Push | main | Full deploy |
 | Push | release/* | Stage deploy |
 | Pull Request | any | Build only |
+| Tag | v*.*.* | Release deploy |
 
 ---
 
