@@ -12,12 +12,19 @@ parent: Architecture
 ## Subscriber
 
 ```python
-@dataclass
-class Subscriber:
+class Subscriber(db.Model):
     """Represents a newsletter subscriber."""
-    email: str              # Primary key, unique identifier
-    name: str               # Display name
+    id: int                   # Primary key
+    email: str                # Unique email address
+    name: str                 # Display name
     subscribed_at: datetime  # Subscription timestamp (auto-generated)
+
+    # Newsletter subscriptions (boolean flags)
+    nl_kost: bool            # Kost & Näring newsletter
+    nl_mindset: bool         # Mindset newsletter
+    nl_kunskap: bool         # Kunskap & Forskning newsletter
+    nl_veckans_pass: bool    # Veckans Pass newsletter
+    nl_jaine: bool           # Träna med Jaine newsletter
 ```
 
 ## SubscriptionResult
@@ -31,6 +38,16 @@ class SubscriptionResult:
     subscriber: Subscriber | None  # Created subscriber data
 ```
 
+## Newsletter Options
+
+| Field | Newsletter | Description |
+|-------|------------|-------------|
+| `nl_kost` | Kost & Näring | Recipes and nutrition tips |
+| `nl_mindset` | Mindset | Mental strength and focus |
+| `nl_kunskap` | Kunskap & Forskning | Science-based training tips |
+| `nl_veckans_pass` | Veckans Pass | Weekly workout routines |
+| `nl_jaine` | Träna med Jaine | AI-powered personal training |
+
 ---
 
 ## Database Schema
@@ -39,11 +56,39 @@ class SubscriptionResult:
 ┌─────────────────┐
 │   subscribers   │
 ├─────────────────┤
-│ PK  email       │ VARCHAR(255)
-│     name        │ VARCHAR(100)
+│ PK  id          │ INTEGER
+│     email       │ VARCHAR(120) UNIQUE
+│     name        │ VARCHAR(120)
 │     subscribed_at│ DATETIME
+│     nl_kost     │ BOOLEAN
+│     nl_mindset  │ BOOLEAN
+│     nl_kunskap  │ BOOLEAN
+│     nl_veckans_pass│ BOOLEAN
+│     nl_jaine    │ BOOLEAN
 └─────────────────┘
 ```
+
+---
+
+## Database Connection
+
+The application uses SQLAlchemy ORM with the following configuration:
+
+| Environment | Database | Driver |
+|-------------|----------|--------|
+| Development | SQLite (in-memory) | sqlite |
+| Production | Azure SQL | pymssql (pure Python) |
+
+Connection is configured via environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `DB_TYPE` | Database type: `sqlite` or `mssql` |
+| `DB_SERVER` | Azure SQL server hostname |
+| `DB_NAME` | Database name |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+| `DB_DRIVER` | Driver: `pymssql` (recommended) or `pyodbc` |
 
 ---
 

@@ -28,6 +28,10 @@ parent: Development
 | Docker Desktop | ✅ | ✅ | ✅ |
 | Azure CLI | ✅ | ✅ | ✅ |
 
+### Database Driver (Automatic)
+
+The application uses SQLAlchemy with `pymssql` driver, which is a pure Python implementation. No external ODBC drivers are required - all dependencies are installed via pip.
+
 ---
 
 ## Common Setup

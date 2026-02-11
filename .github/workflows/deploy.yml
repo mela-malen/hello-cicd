@@ -34,6 +34,7 @@ jobs:
             --resource-group ${{ vars.RESOURCE_GROUP }} \
             --image $ACR_SERVER/hello-cicd:${{ github.sha }} \
             --set-env-vars \
+              DB_TYPE=mssql \
               DB_SERVER=${{ secrets.DB_SERVER }} \
               DB_NAME=${{ secrets.DB_NAME }} \
               DB_USERNAME=${{ secrets.DB_USERNAME }} \
