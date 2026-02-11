@@ -43,6 +43,57 @@
                 >
             </div>
 
+            <div class="form__group">
+                <label class="form__label">Choose your newsletters *</label>
+                <div class="newsletter-options">
+                    <label class="newsletter-option">
+                        <input type="checkbox" name="nl_kost" value="1" {{ 'checked' if newsletters and newsletters.get('kost') }}>
+                        <span class="newsletter-option__box">
+                            <span class="newsletter-option__icon">🥗</span>
+                            <span class="newsletter-option__title">Kost & Näring</span>
+                            <span class="newsletter-option__desc">Recept och kosttips</span>
+                        </span>
+                    </label>
+
+                    <label class="newsletter-option">
+                        <input type="checkbox" name="nl_mindset" value="1" {{ 'checked' if newsletters and newsletters.get('mindset') }}>
+                        <span class="newsletter-option__box">
+                            <span class="newsletter-option__icon">🧠</span>
+                            <span class="newsletter-option__title">Mindset</span>
+                            <span class="newsletter-option__desc">Mental styrka och fokus</span>
+                        </span>
+                    </label>
+
+                    <label class="newsletter-option">
+                        <input type="checkbox" name="nl_kunskap" value="1" {{ 'checked' if newsletters and newsletters.get('kunskap') }}>
+                        <span class="newsletter-option__box">
+                            <span class="newsletter-option__icon">🔬</span>
+                            <span class="newsletter-option__title">Kunskap & Forskning</span>
+                            <span class="newsletter-option__desc">Vetenskapliga tips</span>
+                        </span>
+                    </label>
+
+                    <label class="newsletter-option">
+                        <input type="checkbox" name="nl_veckans_pass" value="1" {{ 'checked' if newsletters and newsletters.get('veckans_pass') }}>
+                        <span class="newsletter-option__box">
+                            <span class="newsletter-option__icon">💪</span>
+                            <span class="newsletter-option__title">Veckans Pass</span>
+                            <span class="newsletter-option__desc">Nya träningspass varje vecka</span>
+                        </span>
+                    </label>
+
+                    <label class="newsletter-option newsletter-option--featured">
+                        <input type="checkbox" name="nl_jaine" value="1" {{ 'checked' if newsletters and newsletters.get('jaine') }}>
+                        <span class="newsletter-option__box">
+                            <span class="newsletter-option__icon">🤖</span>
+                            <span class="newsletter-option__title">Träna med Jaine</span>
+                            <span class="newsletter-option__desc">AI-powered personlig träning</span>
+                            <span class="newsletter-option__badge">AI</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn--primary form__submit">
                 Let's Go!
             </button>
@@ -59,7 +110,7 @@
 <style>
     .subscribe {
         padding: 4rem 2rem;
-        max-width: 500px;
+        max-width: 600px;
         margin: 0 auto;
     }
 
@@ -130,6 +181,83 @@
         color: rgba(255, 255, 255, 0.35);
     }
 
+    /* Newsletter options */
+    .newsletter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .newsletter-option {
+        cursor: pointer;
+    }
+
+    .newsletter-option input[type="checkbox"] {
+        display: none;
+    }
+
+    .newsletter-option__box {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(26, 10, 46, 0.6);
+        border: 2px solid rgba(176, 38, 255, 0.3);
+        border-radius: 0.5rem;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .newsletter-option input:checked + .newsletter-option__box {
+        border-color: var(--neon-pink);
+        background: rgba(255, 20, 147, 0.15);
+        box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+    }
+
+    .newsletter-option__box:hover {
+        border-color: rgba(255, 20, 147, 0.6);
+    }
+
+    .newsletter-option__icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .newsletter-option__title {
+        font-weight: 700;
+        color: var(--neon-yellow);
+        font-size: 0.95rem;
+    }
+
+    .newsletter-option__desc {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.8rem;
+        margin-left: auto;
+    }
+
+    .newsletter-option__badge {
+        position: absolute;
+        top: -8px;
+        right: 10px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        text-transform: uppercase;
+    }
+
+    .newsletter-option--featured .newsletter-option__box {
+        border-color: rgba(0, 229, 255, 0.4);
+    }
+
+    .newsletter-option--featured input:checked + .newsletter-option__box {
+        border-color: var(--neon-cyan);
+        background: rgba(0, 229, 255, 0.15);
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
     .form__submit {
         width: 100%;
         margin-top: 0.5rem;
@@ -163,6 +291,12 @@
         margin-bottom: 1.5rem;
         font-size: 0.875rem;
         font-weight: 600;
+    }
+
+    @media (max-width: 500px) {
+        .newsletter-option__desc {
+            display: none;
+        }
     }
 </style>
 {% endblock %}

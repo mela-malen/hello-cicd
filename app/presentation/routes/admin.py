@@ -10,6 +10,14 @@ from app.business.services.subscription_service import SubscriptionService
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
+NEWSLETTER_NAMES = {
+    'kost': 'Kost & Näring',
+    'mindset': 'Mindset',
+    'kunskap': 'Kunskap & Forskning',
+    'veckans_pass': 'Veckans Pass',
+    'jaine': 'Träna med Jaine',
+}
+
 
 def login_required(f):
     @wraps(f)
@@ -55,13 +63,18 @@ def logout():
 def subscribers():
     """Display list of all newsletter subscribers."""
     sort_by = request.args.get("sort", "date_desc")
+    newsletter_filter = request.args.get("newsletter", None)
+
     service = SubscriptionService()
-    all_subscribers = service.get_all_subscribers(sort_by)
+    all_subscribers = service.get_all_subscribers(sort_by, newsletter_filter)
+
     return render_template(
         "admin/subscribers.html",
         subscribers=all_subscribers,
         count=len(all_subscribers),
         current_sort=sort_by,
+        current_filter=newsletter_filter,
+        newsletter_names=NEWSLETTER_NAMES,
     )
 
 
@@ -79,7 +92,14 @@ def edit_subscriber(subscriber_id: int):
     if request.method == "POST":
         email = request.form.get("email", "")
         name = request.form.get("name", "")
-        result = service.update_subscriber(subscriber_id, email, name)
+        newsletters = {
+            'kost': 'nl_kost' in request.form,
+            'mindset': 'nl_mindset' in request.form,
+            'kunskap': 'nl_kunskap' in request.form,
+            'veckans_pass': 'nl_veckans_pass' in request.form,
+            'jaine': 'nl_jaine' in request.form,
+        }
+        result = service.update_subscriber(subscriber_id, email, name, newsletters)
 
         if result.success:
             flash("Subscriber updated successfully", "success")
@@ -89,9 +109,14 @@ def edit_subscriber(subscriber_id: int):
                 "admin/edit_subscriber.html",
                 subscriber=subscriber,
                 error=result.error,
+                newsletter_names=NEWSLETTER_NAMES,
             )
 
-    return render_template("admin/edit_subscriber.html", subscriber=subscriber)
+    return render_template(
+        "admin/edit_subscriber.html",
+        subscriber=subscriber,
+        newsletter_names=NEWSLETTER_NAMES,
+    )
 
 
 @admin_bp.route("/subscribers/<int:subscriber_id>/delete", methods=["POST"])
@@ -118,3 +143,25 @@ def delete_multiple_subscribers():
         if service.delete_subscriber(int(subscriber_id)):
             deleted_count += 1
     return jsonify({"success": True, "deleted": deleted_count})
+
+
+@admin_bp.route("/subscribers/update-newsletters", methods=["POST"])
+@login_required
+def update_newsletters_bulk():
+    """Update newsletters for multiple subscribers."""
+    data = request.get_json()
+    ids = data.get("ids", [])
+    action = data.get("action", "")  # "add" or "remove"
+    newsletter = data.get("newsletter", "")
+
+    if not ids or not action or not newsletter:
+        return jsonify({"success": False, "error": "Missing parameters"})
+
+    if newsletter not in NEWSLETTER_NAMES:
+        return jsonify({"success": False, "error": "Invalid newsletter"})
+
+    service = SubscriptionService()
+    newsletters = {newsletter: action == "add"}
+    updated = service.update_newsletters_bulk([int(i) for i in ids], newsletters)
+
+    return jsonify({"success": True, "updated": updated})

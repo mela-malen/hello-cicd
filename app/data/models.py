@@ -28,3 +28,29 @@ class Subscriber(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     name = db.Column(db.String(120), nullable=False)
     subscribed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Newsletter subscriptions
+    nl_kost = db.Column(db.Boolean, default=False)
+    nl_mindset = db.Column(db.Boolean, default=False)
+    nl_kunskap = db.Column(db.Boolean, default=False)
+    nl_veckans_pass = db.Column(db.Boolean, default=False)
+    nl_jaine = db.Column(db.Boolean, default=False)
+
+    def get_newsletters(self) -> list[str]:
+        """Return list of subscribed newsletter names."""
+        newsletters = []
+        if self.nl_kost:
+            newsletters.append('kost')
+        if self.nl_mindset:
+            newsletters.append('mindset')
+        if self.nl_kunskap:
+            newsletters.append('kunskap')
+        if self.nl_veckans_pass:
+            newsletters.append('veckans_pass')
+        if self.nl_jaine:
+            newsletters.append('jaine')
+        return newsletters
+
+    def get_newsletter_count(self) -> int:
+        """Return number of subscribed newsletters."""
+        return len(self.get_newsletters())

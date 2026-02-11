@@ -22,6 +22,32 @@
                 <input type="text" id="name" name="name" class="edit__input" value="{{ subscriber.name }}" required>
             </div>
 
+            <div class="edit__field">
+                <label class="edit__label">Newsletters</label>
+                <div class="edit__newsletters">
+                    <label class="edit__checkbox">
+                        <input type="checkbox" name="nl_kost" {{ 'checked' if subscriber.nl_kost }}>
+                        <span>🥗 Kost & Näring</span>
+                    </label>
+                    <label class="edit__checkbox">
+                        <input type="checkbox" name="nl_mindset" {{ 'checked' if subscriber.nl_mindset }}>
+                        <span>🧠 Mindset</span>
+                    </label>
+                    <label class="edit__checkbox">
+                        <input type="checkbox" name="nl_kunskap" {{ 'checked' if subscriber.nl_kunskap }}>
+                        <span>🔬 Kunskap & Forskning</span>
+                    </label>
+                    <label class="edit__checkbox">
+                        <input type="checkbox" name="nl_veckans_pass" {{ 'checked' if subscriber.nl_veckans_pass }}>
+                        <span>💪 Veckans Pass</span>
+                    </label>
+                    <label class="edit__checkbox edit__checkbox--featured">
+                        <input type="checkbox" name="nl_jaine" {{ 'checked' if subscriber.nl_jaine }}>
+                        <span>🤖 Träna med Jaine</span>
+                    </label>
+                </div>
+            </div>
+
             <div class="edit__info">
                 <p><strong>Subscribed:</strong> {{ subscriber.subscribed_at.strftime("%Y-%m-%d %H:%M") }}</p>
             </div>
@@ -49,7 +75,7 @@
         background: linear-gradient(135deg, rgba(45, 10, 78, 0.95), rgba(26, 10, 46, 0.95));
         border: 2px solid var(--neon-pink);
         border-radius: 1.5rem;
-        padding: 3rem;
+        padding: 2.5rem;
         max-width: 500px;
         width: 100%;
         box-shadow:
@@ -112,6 +138,48 @@
         box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
     }
 
+    .edit__newsletters {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .edit__checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(26, 10, 46, 0.6);
+        border: 1px solid rgba(255, 20, 147, 0.2);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .edit__checkbox:hover {
+        border-color: rgba(255, 20, 147, 0.5);
+    }
+
+    .edit__checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--neon-pink);
+        cursor: pointer;
+    }
+
+    .edit__checkbox span {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+    }
+
+    .edit__checkbox--featured {
+        border-color: rgba(0, 229, 255, 0.3);
+    }
+
+    .edit__checkbox--featured input[type="checkbox"] {
+        accent-color: var(--neon-cyan);
+    }
+
     .edit__info {
         background: rgba(0, 229, 255, 0.1);
         border: 1px solid rgba(0, 229, 255, 0.3);
@@ -128,7 +196,7 @@
     .edit__buttons {
         display: flex;
         gap: 1rem;
-        margin-top: 1rem;
+        margin-top: 0.5rem;
     }
 
     .edit__buttons .btn {

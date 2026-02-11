@@ -23,76 +23,116 @@
         {% endif %}
     {% endwith %}
 
-    {% if subscribers %}
     <div class="admin__toolbar">
-        <div class="admin__sort">
-            <label for="sort">Sort by:</label>
-            <select id="sort" onchange="window.location.href='?sort=' + this.value">
-                <option value="date_desc" {{ 'selected' if current_sort == 'date_desc' }}>Date (newest first)</option>
-                <option value="date_asc" {{ 'selected' if current_sort == 'date_asc' }}>Date (oldest first)</option>
-                <option value="name_asc" {{ 'selected' if current_sort == 'name_asc' }}>Name (A-Z)</option>
-                <option value="name_desc" {{ 'selected' if current_sort == 'name_desc' }}>Name (Z-A)</option>
-                <option value="email_asc" {{ 'selected' if current_sort == 'email_asc' }}>Email (A-Z)</option>
-                <option value="email_desc" {{ 'selected' if current_sort == 'email_desc' }}>Email (Z-A)</option>
-            </select>
+        <div class="admin__filters">
+            <div class="admin__sort">
+                <label for="sort">Sort:</label>
+                <select id="sort" onchange="applyFilters()">
+                    <option value="date_desc" {{ 'selected' if current_sort == 'date_desc' }}>Date (newest)</option>
+                    <option value="date_asc" {{ 'selected' if current_sort == 'date_asc' }}>Date (oldest)</option>
+                    <option value="name_asc" {{ 'selected' if current_sort == 'name_asc' }}>Name (A-Z)</option>
+                    <option value="name_desc" {{ 'selected' if current_sort == 'name_desc' }}>Name (Z-A)</option>
+                    <option value="email_asc" {{ 'selected' if current_sort == 'email_asc' }}>Email (A-Z)</option>
+                    <option value="email_desc" {{ 'selected' if current_sort == 'email_desc' }}>Email (Z-A)</option>
+                </select>
+            </div>
+            <div class="admin__filter">
+                <label for="newsletter">Filter:</label>
+                <select id="newsletter" onchange="applyFilters()">
+                    <option value="">All newsletters</option>
+                    {% for key, name in newsletter_names.items() %}
+                    <option value="{{ key }}" {{ 'selected' if current_filter == key }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="admin__bulk-actions">
             <button type="button" class="btn btn--secondary btn--small" onclick="copySelectedEmails()">
-                Copy Selected Emails
+                Copy Emails
             </button>
-            <button type="button" class="btn btn--secondary btn--small" onclick="copyAllEmails()">
-                Copy All Emails
-            </button>
+            <div class="admin__dropdown">
+                <button type="button" class="btn btn--secondary btn--small" onclick="toggleDropdown('addDropdown')">
+                    + Add Newsletter
+                </button>
+                <div id="addDropdown" class="admin__dropdown-menu">
+                    {% for key, name in newsletter_names.items() %}
+                    <a href="#" onclick="bulkUpdateNewsletter('{{ key }}', 'add'); return false;">{{ name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="admin__dropdown">
+                <button type="button" class="btn btn--secondary btn--small" onclick="toggleDropdown('removeDropdown')">
+                    - Remove Newsletter
+                </button>
+                <div id="removeDropdown" class="admin__dropdown-menu">
+                    {% for key, name in newsletter_names.items() %}
+                    <a href="#" onclick="bulkUpdateNewsletter('{{ key }}', 'remove'); return false;">{{ name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
             <button type="button" class="btn btn--danger btn--small" onclick="deleteSelected()">
-                Delete Selected
+                Delete
             </button>
         </div>
     </div>
 
-    <table class="admin__table">
-        <thead>
-            <tr>
-                <th class="admin__table-checkbox">
-                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
-                </th>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Subscribed</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for subscriber in subscribers %}
-            <tr data-id="{{ subscriber.id }}" data-email="{{ subscriber.email }}" data-name="{{ subscriber.name }}">
-                <td class="admin__table-checkbox">
-                    <input type="checkbox" class="subscriber-checkbox" value="{{ subscriber.id }}" data-email="{{ subscriber.email }}">
-                </td>
-                <td>{{ subscriber.email }}</td>
-                <td>{{ subscriber.name }}</td>
-                <td>{{ subscriber.subscribed_at.strftime("%Y-%m-%d %H:%M") }}</td>
-                <td class="admin__table-actions">
-                    <a href="{{ url_for('admin.edit_subscriber', subscriber_id=subscriber.id) }}" class="btn btn--small btn--secondary">Edit</a>
-                    <form method="POST" action="{{ url_for('admin.delete_subscriber', subscriber_id=subscriber.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this subscriber?');">
-                        <button type="submit" class="btn btn--small btn--danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div id="copyNotification" class="admin__notification">Emails copied to clipboard!</div>
-
+    {% if subscribers %}
+    <div class="admin__table-wrapper">
+        <table class="admin__table">
+            <thead>
+                <tr>
+                    <th class="admin__table-checkbox">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                    </th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th class="admin__table-newsletters">Newsletters</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscriber in subscribers %}
+                <tr data-id="{{ subscriber.id }}" data-email="{{ subscriber.email }}">
+                    <td class="admin__table-checkbox">
+                        <input type="checkbox" class="subscriber-checkbox" value="{{ subscriber.id }}" data-email="{{ subscriber.email }}">
+                    </td>
+                    <td>{{ subscriber.email }}</td>
+                    <td>{{ subscriber.name }}</td>
+                    <td class="admin__table-newsletters">
+                        <div class="newsletter-badges">
+                            {% if subscriber.nl_kost %}<span class="nl-badge" title="Kost & Näring">🥗</span>{% endif %}
+                            {% if subscriber.nl_mindset %}<span class="nl-badge" title="Mindset">🧠</span>{% endif %}
+                            {% if subscriber.nl_kunskap %}<span class="nl-badge" title="Kunskap & Forskning">🔬</span>{% endif %}
+                            {% if subscriber.nl_veckans_pass %}<span class="nl-badge" title="Veckans Pass">💪</span>{% endif %}
+                            {% if subscriber.nl_jaine %}<span class="nl-badge nl-badge--ai" title="Träna med Jaine">🤖</span>{% endif %}
+                            {% if subscriber.get_newsletter_count() == 0 %}<span class="nl-none">-</span>{% endif %}
+                        </div>
+                    </td>
+                    <td>{{ subscriber.subscribed_at.strftime("%Y-%m-%d") }}</td>
+                    <td class="admin__table-actions">
+                        <a href="{{ url_for('admin.edit_subscriber', subscriber_id=subscriber.id) }}" class="btn btn--small btn--secondary">Edit</a>
+                        <form method="POST" action="{{ url_for('admin.delete_subscriber', subscriber_id=subscriber.id) }}" style="display: inline;" onsubmit="return confirm('Delete this subscriber?');">
+                            <button type="submit" class="btn btn--small btn--danger">Del</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-    <p class="admin__empty">No subscribers yet. Share your newsletter!</p>
+    <p class="admin__empty">No subscribers found.</p>
     {% endif %}
+
+    <div id="notification" class="admin__notification"></div>
 </div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
     .admin {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1rem;
     }
@@ -159,25 +199,27 @@
         border: 1px solid rgba(255, 20, 147, 0.3);
     }
 
-    .admin__sort {
+    .admin__filters {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .admin__sort, .admin__filter {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         color: var(--neon-cyan);
     }
 
-    .admin__sort select {
+    .admin__sort select, .admin__filter select {
         background: rgba(26, 10, 46, 0.8);
         border: 1px solid var(--neon-pink);
         color: white;
-        padding: 0.5rem 1rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 0.25rem;
         cursor: pointer;
-    }
-
-    .admin__sort select:focus {
-        outline: none;
-        box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+        font-size: 0.85rem;
     }
 
     .admin__bulk-actions {
@@ -186,19 +228,56 @@
         flex-wrap: wrap;
     }
 
+    .admin__dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .admin__dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: rgba(26, 10, 46, 0.95);
+        border: 1px solid var(--neon-pink);
+        border-radius: 0.25rem;
+        min-width: 180px;
+        z-index: 100;
+        margin-top: 0.25rem;
+    }
+
+    .admin__dropdown-menu.show {
+        display: block;
+    }
+
+    .admin__dropdown-menu a {
+        display: block;
+        padding: 0.5rem 1rem;
+        color: white;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .admin__dropdown-menu a:hover {
+        background: rgba(255, 20, 147, 0.3);
+    }
+
+    .admin__table-wrapper {
+        overflow-x: auto;
+    }
+
     .admin__table {
         width: 100%;
         border-collapse: collapse;
         background: rgba(45, 10, 78, 0.8);
         border-radius: 0.5rem;
         overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(255, 20, 147, 0.3);
     }
 
     .admin__table th,
     .admin__table td {
-        padding: 0.75rem 1rem;
+        padding: 0.6rem 0.8rem;
         text-align: left;
         border-bottom: 1px solid rgba(255, 20, 147, 0.2);
     }
@@ -208,12 +287,13 @@
         font-weight: 600;
         color: var(--neon-yellow);
         text-transform: uppercase;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         letter-spacing: 1px;
     }
 
     .admin__table td {
         color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
     }
 
     .admin__table tbody tr:hover {
@@ -221,20 +301,44 @@
     }
 
     .admin__table-checkbox {
-        width: 40px;
+        width: 35px;
         text-align: center !important;
     }
 
     .admin__table-checkbox input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         cursor: pointer;
         accent-color: var(--neon-pink);
     }
 
+    .admin__table-newsletters {
+        width: 140px;
+    }
+
+    .newsletter-badges {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+    }
+
+    .nl-badge {
+        font-size: 1.1rem;
+        cursor: help;
+    }
+
+    .nl-badge--ai {
+        filter: drop-shadow(0 0 3px var(--neon-cyan));
+    }
+
+    .nl-none {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
     .admin__table-actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.3rem;
+        white-space: nowrap;
     }
 
     .admin__empty {
@@ -271,6 +375,7 @@
         background: transparent;
         border: 2px solid var(--neon-cyan);
         color: var(--neon-cyan);
+        cursor: pointer;
     }
 
     .btn--secondary:hover {
@@ -282,6 +387,7 @@
         background: transparent;
         border: 2px solid #ff4444;
         color: #ff4444;
+        cursor: pointer;
     }
 
     .btn--danger:hover {
@@ -290,8 +396,8 @@
     }
 
     .btn--small {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
     }
 
     @media (max-width: 768px) {
@@ -305,12 +411,7 @@
         }
 
         .admin__table {
-            font-size: 0.85rem;
-        }
-
-        .admin__table th:nth-child(3),
-        .admin__table td:nth-child(3) {
-            display: none;
+            font-size: 0.8rem;
         }
     }
 </style>
@@ -318,9 +419,24 @@
 
 {% block scripts %}
 <script>
+    function applyFilters() {
+        const sort = document.getElementById('sort').value;
+        const newsletter = document.getElementById('newsletter').value;
+        let url = '?sort=' + sort;
+        if (newsletter) {
+            url += '&newsletter=' + newsletter;
+        }
+        window.location.href = url;
+    }
+
     function toggleSelectAll(checkbox) {
         const checkboxes = document.querySelectorAll('.subscriber-checkbox');
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+
+    function getSelectedIds() {
+        const checkboxes = document.querySelectorAll('.subscriber-checkbox:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
     }
 
     function getSelectedEmails() {
@@ -328,86 +444,88 @@
         return Array.from(checkboxes).map(cb => cb.dataset.email);
     }
 
-    function getAllEmails() {
-        const checkboxes = document.querySelectorAll('.subscriber-checkbox');
-        return Array.from(checkboxes).map(cb => cb.dataset.email);
-    }
-
-    function formatEmailsForOutlook(emails) {
-        return emails.join('; ');
-    }
-
     function showNotification(message) {
-        const notification = document.getElementById('copyNotification');
+        const notification = document.getElementById('notification');
         notification.textContent = message;
         notification.classList.add('show');
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
+        setTimeout(() => notification.classList.remove('show'), 3000);
     }
 
     function copySelectedEmails() {
         const emails = getSelectedEmails();
         if (emails.length === 0) {
-            showNotification('No emails selected!');
+            const allEmails = Array.from(document.querySelectorAll('.subscriber-checkbox')).map(cb => cb.dataset.email);
+            if (allEmails.length === 0) {
+                showNotification('No emails to copy');
+                return;
+            }
+            navigator.clipboard.writeText(allEmails.join('; ')).then(() => {
+                showNotification(`All ${allEmails.length} email(s) copied!`);
+            });
             return;
         }
-        const formatted = formatEmailsForOutlook(emails);
-        navigator.clipboard.writeText(formatted).then(() => {
-            showNotification(`${emails.length} email(s) copied to clipboard!`);
-        }).catch(err => {
-            showNotification('Failed to copy emails');
-            console.error('Copy failed:', err);
+        navigator.clipboard.writeText(emails.join('; ')).then(() => {
+            showNotification(`${emails.length} email(s) copied!`);
         });
     }
 
-    function copyAllEmails() {
-        const emails = getAllEmails();
-        if (emails.length === 0) {
-            showNotification('No emails to copy!');
+    function toggleDropdown(id) {
+        document.querySelectorAll('.admin__dropdown-menu').forEach(menu => {
+            if (menu.id !== id) menu.classList.remove('show');
+        });
+        document.getElementById(id).classList.toggle('show');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.admin__dropdown')) {
+            document.querySelectorAll('.admin__dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+
+    function bulkUpdateNewsletter(newsletter, action) {
+        const ids = getSelectedIds();
+        if (ids.length === 0) {
+            showNotification('No subscribers selected');
             return;
         }
-        const formatted = formatEmailsForOutlook(emails);
-        navigator.clipboard.writeText(formatted).then(() => {
-            showNotification(`All ${emails.length} email(s) copied to clipboard!`);
-        }).catch(err => {
-            showNotification('Failed to copy emails');
-            console.error('Copy failed:', err);
+
+        fetch('{{ url_for("admin.update_newsletters_bulk") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids, newsletter: newsletter, action: action })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(`Updated ${data.updated} subscriber(s)`);
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showNotification('Update failed: ' + data.error);
+            }
         });
     }
 
     function deleteSelected() {
-        const checkboxes = document.querySelectorAll('.subscriber-checkbox:checked');
-        const ids = Array.from(checkboxes).map(cb => cb.value);
-
+        const ids = getSelectedIds();
         if (ids.length === 0) {
-            showNotification('No subscribers selected!');
+            showNotification('No subscribers selected');
             return;
         }
-
-        if (!confirm(`Are you sure you want to delete ${ids.length} subscriber(s)?`)) {
-            return;
-        }
+        if (!confirm(`Delete ${ids.length} subscriber(s)?`)) return;
 
         fetch('{{ url_for("admin.delete_multiple_subscribers") }}', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: ids })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
-                showNotification(`${data.deleted} subscriber(s) deleted!`);
+                showNotification(`Deleted ${data.deleted} subscriber(s)`);
                 setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showNotification('Failed to delete subscribers');
             }
-        })
-        .catch(err => {
-            showNotification('Error deleting subscribers');
-            console.error('Delete failed:', err);
         });
     }
 </script>
