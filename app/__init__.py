@@ -1,7 +1,10 @@
 import os
+import logging
 from flask import Flask
 from .config import config
 from .data.models import db
+
+logger = logging.getLogger(__name__)
 
 
 def create_app(config_name: str | None = None) -> Flask:
@@ -20,8 +23,13 @@ def create_app(config_name: str | None = None) -> Flask:
     # Initialize database
     db.init_app(app)
 
+    # Try to create tables, but don't fail if connection fails
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            logger.info("Database tables created successfully")
+        except Exception as e:
+            logger.warning(f"Could not create database tables (may need migration): {e}")
 
     # Register blueprints
     from .presentation.routes.public import bp as public_bp
