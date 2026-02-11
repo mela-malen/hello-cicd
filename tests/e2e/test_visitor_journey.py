@@ -1,31 +1,6 @@
 import pytest
 from playwright.sync_api import Page
-import subprocess
-import time
 import os
-
-
-@pytest.fixture(scope="session")
-def app_server():
-    """Start Flask server for E2E tests."""
-    env = os.environ.copy()
-    env['FLASK_ENV'] = 'testing'
-    env['PYTHONPATH'] = '/home/uzanto/Development/mika/hello-cicd'
-
-    process = subprocess.Popen(
-        ['python', '-m', 'flask', 'run', '--host', '0.0.0.0', '--port', '5000'],
-        env=env,
-        cwd='/home/uzanto/Development/mika/hello-cicd',
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
-    )
-
-    time.sleep(3)
-
-    yield process
-
-    process.terminate()
-    process.wait()
 
 
 @pytest.fixture
