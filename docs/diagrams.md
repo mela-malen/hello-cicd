@@ -5,93 +5,70 @@ nav_order: 99
 ---
 
 <div class="neon-page-header">
-  <h1 class="neon-heading">📊 DIAGRAMS</h1>
+  <h1 class="neon-heading">DIAGRAMS</h1>
 </div>
 
 ## System Architecture
 
 ```mermaid
-graph TB
-    subgraph Users["Users & Clients"]
-        Browser[Web Browser]
-        Mobile[Mobile App]
-        API[API Client]
+flowchart TB
+    subgraph Users["Users"]
+        Browser["Web Browser"]
+        Mobile["Mobile Device"]
     end
 
-    subgraph Azure["Azure Cloud Infrastructure"]
-        subgraph Network["Network Layer"]
-            FrontDoor["Azure Front Door"]
-            WAF["Web Application Firewall"]
+    subgraph Azure["Azure Cloud - Sweden Central"]
+        subgraph Network["Network"]
+            CustomDomain["Custom Domain\ndeploj.se"]
         end
 
-        subgraph Compute["Compute Layer"]
-            ACA["Azure Container Apps"]
-            subgraph Pods["Container Pods"]
-                Pod1["Pod 1 - Flask"]
-                Pod2["Pod 2 - Flask"]
-                PodN["Pod N - Flask"]
+        subgraph Compute["Compute"]
+            ACA["Azure Container Apps\nca-hello-cicd"]
+            subgraph Pods["Container Pod"]
+                Container["hello-cicd\nContainer"]
             end
         end
 
-        subgraph Storage["Storage Layer"]
-            ACR["Azure Container Registry"]
-            KeyVault["Azure Key Vault"]
-            SQL["Azure SQL Database"]
+        subgraph Registry["Container Registry"]
+            ACR["Azure Container Registry\nacrhellocicda593ac50"]
+            Images["Docker Images"]
         end
 
-        subgraph Monitoring["Observability"]
-            LogAnalytics["Log Analytics"]
-            Monitor["Azure Monitor"]
+        subgraph Data["Data"]
+            SQL["Azure SQL Database\ndeplojdb1\nGP_S_Gen5"]
+        end
+
+        subgraph Observability["Observability"]
+            LogAnalytics["Log Analytics\nworkspace-rghellocicd"]
         end
     end
 
-    subgraph CI["CI/CD Pipeline"]
-        GitHub["GitHub Repository"]
-        GHActions["GitHub Actions"]
-        GHCR["GitHub Container Registry"]
+    subgraph CI["CI/CD"]
+        GitHub["GitHub Repository\nmela-malen/hello-cicd"]
+        Actions["GitHub Actions\nBuild and Deploy"]
     end
 
-    %% User connections
-    Browser -->|HTTPS| FrontDoor
-    Mobile -->|HTTPS| FrontDoor
-    API -->|HTTPS| FrontDoor
+    Users -->|HTTPS| CustomDomain
+    CustomDomain --> ACA
+    ACA --> Pods
+    Pods --> Images
+    Pods --> SQL
+    Pods --> LogAnalytics
+    GitHub -->|Push| Actions
+    Actions -->|Build & Push| ACR
+    ACR -->|Deploy| ACA
 
-    %% Network layer
-    FrontDoor --> WAF
-    WAF --> ACA
-
-    %% Compute layer
-    ACA --> Pod1
-    ACA --> Pod2
-    ACA --> PodN
-
-    %% Storage connections
-    Pods -->|Docker Images| ACR
-    Pods -->|Secrets| KeyVault
-    Pods -->|TCP 1433| SQL
-
-    %% Monitoring
-    Pods -->|Logs/Metrics| LogAnalytics
-    LogAnalytics --> Monitor
-
-    %% CI/CD connections
-    GitHub -->|Push| GHActions
-    GHActions -->|Build| GHCR
-    GHActions -->|Push Image| ACR
-    GHActions -->|Deploy| ACA
-
-    %% Styling
     classDef azure fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
     classDef compute fill:#00bcf2,stroke:#fff,stroke-width:2px,color:#000
     classDef storage fill:#107c10,stroke:#fff,stroke-width:2px,color:#fff
     classDef pipeline fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
     classDef users fill:#d83b01,stroke:#fff,stroke-width:2px,color:#fff
 
-    class FrontDoor,WAF,KeyVault,SQL,Monitor azure
-    class ACA,Pods,Pod1,Pod2,PodN compute
-    class ACR,LogAnalytics storage
-    class GitHub,GHActions,GHCR pipeline
-    class Browser,Mobile,API users
+    class Azure,Network,Compute,Data,Observability azure
+    class ACA,Pods,Container compute
+    class ACR,Images,SQL storage
+    class GitHub,Actions pipeline
+    class Users,Browser,Mobile users
 ```
 
 ---
@@ -100,45 +77,46 @@ graph TB
 
 ```mermaid
 flowchart TD
-    START[Start: Developer Push] --> Checkout[Checkout Code]
-
-    subgraph Build["Build Stage"]
-        Checkout --> Install[Install Dependencies]
-        Install --> Lint[Run Linters]
-        Lint --> Test[Run Tests]
-        Test --> BuildDocker[Build Docker Image]
-        BuildDocker --> Scan[Security Scan]
+    subgraph Triggers["Triggers"]
+        PushMain["Push to main"]
+        PR["PR to main"]
     end
 
-    subgraph Push["Push Stage"]
-        Scan --> Tag[Tag Image]
-        Tag --> PushACR[Push to ACR]
+    subgraph Test["Job: test"]
+        CheckoutT["Checkout"]
+        Python["Setup Python 3.11"]
+        Install["Install deps + Playwright"]
+        UnitTest["Run unit tests"]
+        E2ETest["Run E2E tests"]
     end
 
-    subgraph Deploy["Deploy Stage"]
-        PushACR --> UpdateACA[Update Container App]
-        UpdateACA --> HealthCheck[Health Check]
-        HealthCheck --> Verify[Verification]
+    subgraph Build["Job: build-and-deploy"]
+        CheckoutB["Checkout"]
+        AzureLogin["Azure Login\nOIDC with MI"]
+        BuildACR["Build & Push to ACR\naz acr build"]
+        DeployACA["Deploy to Container App\naz containerapp update"]
+        HealthCheck["Health check\ncurl FQDN 5x"]
     end
 
-    subgraph Notify["Notification Stage"]
-        Verify --> Result{Success?}
-        Result -->|Yes| TagRelease[Create GitHub Release]
-        Result -->|No| Rollback[Rollback Previous Version]
-        TagRelease --> Slack[Notify via Slack]
-        Rollback --> Alert[Send Alert]
-        Slack --> END[End]
-        Alert --> END
+    subgraph Result["Result"]
+        Success["Deploy successful"]
+        Fail["Deploy failed"]
     end
 
-    %% Styling
-    classDef stages fill:#1a1a2e,stroke:#ff00ff,stroke-width:2px,color:#fff
-    classDef decision fill:#2d2d44,stroke:#ffff00,stroke-width:2px,color:#fff
-    classDef startend fill:#0a3d62,stroke:#00ff00,stroke-width:2px,color:#fff
+    Triggers --> Test
+    Test -->|pass| Build
+    Test -->|fail| Fail
+    Build -->|pass| HealthCheck
+    HealthCheck -->|pass| Success
+    HealthCheck -->|fail| Fail
 
-    class Build,Push,Deploy,Notify stages
-    class Result decision
-    class START,END startend
+    classDef trigger fill:#d83b01,stroke:#fff,stroke-width:2px,color:#fff
+    classDef job fill:#1a1a2e,stroke:#00ffff,stroke-width:2px,color:#fff
+    classDef result fill:#107c10,stroke:#fff,stroke-width:2px,color:#fff
+
+    class Triggers,PushMain,PR trigger
+    class Test,Build,CheckoutT,Python,Install,UnitTest,E2ETest,CheckoutB,AzureLogin,BuildACR,DeployACA,HealthCheck job
+    class Success,Fail result
 ```
 
 ---
@@ -152,41 +130,41 @@ sequenceDiagram
     participant GHA as GitHub Actions
     participant ACR as Azure Container Registry
     participant ACA as Azure Container Apps
-    participant DB as Azure SQL
-    participant KV as Key Vault
+    participant DB as Azure SQL Database
 
-    Dev->>GH: Push to main branch
+    Dev->>GH: Push to main
     GH->>GHA: Trigger workflow
-    GHA->>GHA: Checkout code
-    GHA->>GHA: Install Python dependencies
-    GHA->>GHA: Run tests
 
-    par Build Docker Image
-        GHA->>GHA: Build Docker image
-        GHA->>GHA: Security scan
-    and Push to Registry
-        GHA->>ACR: Login with SP
-        ACR-->>GHA: Auth token
-        GHA->>ACR: Push image with SHA tag
+    Note over GHA: Job: test
+    GHA->>GHA: Checkout code
+    GHA->>GHA: Setup Python 3.11
+    GHA->>GHA: Install dependencies
+    GHA->>GHA: Run unit tests
+    GHA->>GHA: Run E2E tests
+
+    GHA->>GHA: Job: build-and-deploy
+    GHA->>GHA: Checkout code
+    GHA->>ACR: az acr build (login via OIDC)
+    ACR-->>GHA: Image pushed
+
+    ACA->>ACA: Pull new image
+    ACA->>ACA: Update revision
+
+    par Health Check
+        ACA->>ACA: Health check /health
+    and Update Env Vars
+        ACA->>ACA: DB_SERVER, DB_NAME, etc.
     end
 
-    ACR->>ACA: Image available
-    ACA->>ACA: Pull new image
-    ACA->>ACA: Create new revision
-    ACA->>ACA: Health check (HTTP /health)
-    
-    alt Health Check Passed
+    alt Health check passed
         ACA->>ACA: Route traffic to new revision
         ACA->>Dev: Deployment successful
-    else Health Check Failed
-        ACA->>ACA: Rollback to previous revision
-        ACA->>Dev: Deployment failed - notification sent
+    else Health check failed
+        ACA->>ACA: Rollback
+        ACA->>Dev: Deployment failed
     end
 
-    Note over ACA,DB: Secure connection via Private Endpoint
-    ACA->>KV: Fetch secrets (connection string)
-    KV-->>ACA: Decrypted secrets
-    ACA->>DB: Database operations
+    ACA->>DB: SQL connections
 ```
 
 ---
@@ -194,15 +172,14 @@ sequenceDiagram
 ## Application Component Architecture
 
 ```mermaid
-graph TB
+flowchart TB
     subgraph Presentation["Presentation Layer"]
-        subgraph Routes["Flask Blueprints"]
-            PublicBP["Public Blueprint"]
-            AdminBP["Admin Blueprint"]
-            APIBP["API Blueprint"]
+        subgraph Blueprints["Flask Blueprints"]
+            PublicBP["Public Blueprint\n/"]
+            AdminBP["Admin Blueprint\n/admin"]
         end
-        
-        subgraph Views["Views/Templates"]
+
+        subgraph Views["Views"]
             Home["Home View"]
             Subscribe["Subscribe View"]
             Admin["Admin Dashboard"]
@@ -210,15 +187,13 @@ graph TB
     end
 
     subgraph Business["Business Logic Layer"]
-        subgraph Services["Domain Services"]
+        subgraph Services["Services"]
             SubService["SubscriptionService"]
             UserService["UserService"]
-            NewsletterService["NewsletterService"]
         end
-        
+
         subgraph Validation["Validators"]
             EmailValidator["Email Validator"]
-            FormValidator["Form Validator"]
         end
     end
 
@@ -226,36 +201,25 @@ graph TB
         subgraph Repositories["Repositories"]
             SubRepo["SubscriberRepository"]
             UserRepo["UserRepository"]
-            NewsRepo["NewsletterRepository"]
         end
-        
+
         subgraph ORM["ORM Layer"]
             SQLAlchemy["Flask-SQLAlchemy"]
             Models["SQLAlchemy Models"]
         end
     end
 
-    subgraph External["External Services"]
-        Azure["Azure Services"]
-        Email["Email Service"]
-    end
-
-    %% Connections
-    Routes --> Views
-    Routes --> Services
+    Blueprints --> Views
+    Blueprints --> Services
     Services --> Repositories
-    Repositories --> ORM
     Services --> Validation
-    Services --> External
+    Repositories --> ORM
 
-    %% Styling
     classDef layer fill:#1a1a2e,stroke:#00ffff,stroke-width:2px,color:#fff
     classDef component fill:#16213e,stroke:#ff00ff,stroke-width:1px,color:#fff
-    classDef service fill:#0f3460,stroke:#00ff00,stroke-width:1px,color:#fff
 
-    class Presentation,Business,Data,External layer
-    class Routes,Views,Services,Repositories,ORM component
-    class SubService,UserService,NewsletterService,EmailValidator service
+    class Presentation,Business,Data layer
+    class Blueprints,Views,Services,Repositories,ORM,PublicBP,AdminBP,Home,Subscribe,Admin,SubService,UserService,EmailValidator,SubRepo,UserRepo component
 ```
 
 ---
@@ -277,7 +241,7 @@ flowchart TD
     subgraph Processing["Processing Stage"]
         Validate3 --> Normalize["Normalize email"]
         Normalize --> CheckDup["Check duplicates"]
-        
+
         CheckDup -->|Already exists| Update["Update existing"]
         CheckDup -->|New| Create["Create new subscriber"]
     end
@@ -294,7 +258,6 @@ flowchart TD
         Render --> Success([Success - Thank you page])
     end
 
-    %% Styling
     classDef process fill:#1a1a2e,stroke:#00ff00,stroke-width:2px,color:#fff
     classDef storage fill:#0f3460,stroke:#ffff00,stroke-width:2px,color:#fff
     classDef decision fill:#2d2d44,stroke:#ff9900,stroke-width:2px,color:#fff
@@ -314,7 +277,7 @@ flowchart TD
 erDiagram
     USER ||--o{ SUBSCRIBER : manages
     SUBSCRIBER ||--o{ NEWSLETTER_SUBSCRIPTION : has
-    
+
     USER {
         int id PK
         string username UK
@@ -324,7 +287,7 @@ erDiagram
         datetime last_login
         boolean is_active
     }
-    
+
     SUBSCRIBER {
         int id PK
         string name
@@ -333,7 +296,7 @@ erDiagram
         datetime updated_at
         boolean is_active
     }
-    
+
     NEWSLETTER {
         int id PK
         string name
@@ -341,7 +304,7 @@ erDiagram
         string slug UK
         boolean is_active
     }
-    
+
     NEWSLETTER_SUBSCRIPTION {
         int id PK
         int subscriber_id FK
@@ -349,58 +312,55 @@ erDiagram
         datetime subscribed_at
         boolean is_active
     }
-    
+
     SUBSCRIBER }o--|| NEWSLETTER : subscribes_to
 ```
 
 ---
 
-## Scalability & Load Balancing
+## Infrastructure Resources
 
 ```mermaid
 flowchart TB
-    subgraph Users["Traffic Sources"]
-        LB["Load Balancer"]
-        CD["CDN Edges"]
-    end
-
-    subgraph ACA["Azure Container Apps"]
-        subgraph Ingress["Ingress Controller"]
-            LB["Load Balancer"]
+    subgraph RG["Resource Group: rg-hello-cicd"]
+        subgraph Compute["Container Apps"]
+            CAE["Container Apps Environment\ncae-hello-cicd"]
+            CA["Container App\nca-hello-cicd\nCPU: 0.5, Memory: 1Gi\nMinReplicas: null, MaxReplicas: 10"]
         end
-        
-        subgraph Instances["Replicas"]
-            Replica1["Replica 1\n512MB RAM\n0.5 CPU"]
-            Replica2["Replica 2\n512MB RAM\n0.5 CPU"]
-            Replica3["Replica N\n512MB RAM\n0.5 CPU"]
+
+        subgraph Registry["Container Registry"]
+            ACR["Container Registry\nacrhellocicda593ac50\nacrhellocicda593ac50.azurecr.io"]
+        end
+
+        subgraph Data["Data"]
+            SQLS["SQL Server\ndeplojdb\ndeplojdb.database.windows.net"]
+            SQLDB["SQL Database\ndeplojdb1\nGP_S_Gen5"]
+        end
+
+        subgraph Identity["Identity"]
+            MI["Managed Identity\nid-hello-cicd-deploy\nClientID: d0d0a844-..."]
+        end
+
+        subgraph Monitoring["Monitoring"]
+            LA["Log Analytics\nworkspace-rghellocicd"]
         end
     end
 
-    subgraph Scaling["Auto-Scaling"]
-        Metrics["KEDA Metrics"]
-        Rules["Scaling Rules"]
+    subgraph DNS["DNS"]
+        Custom["Custom Domain\ndeploj.se\n-> ca-hello-cicd.calmsky-...azurecontainerapps.io"]
     end
 
-    Users --> LB
-    LB --> Replica1
-    LB --> Replica2
-    LB --> Replica3
+    CAE --> CA
+    CA --> ACR
+    CA --> SQLDB
+    CA --> LA
+    Custom --> CA
 
-    Replica1 -->|CPU > 70%| Metrics
-    Replica2 -->|CPU > 70%| Metrics
-    Replica3 -->|CPU > 70%| Metrics
-    
-    Metrics --> Rules
-    Rules -->|Scale Out| Replica3
+    classDef rg fill:#0078d4,stroke:#fff,stroke-width:3px,color:#fff
+    classDef resource fill:#1a1a2e,stroke:#00ffff,stroke-width:2px,color:#fff
 
-    %% Styling
-    classDef azure fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
-    classDef compute fill:#00bcf2,stroke:#fff,stroke-width:2px,color:#000
-    classDef scaling fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
-
-    class LB,CD azure
-    class ACA,Ingress,Instances,Replica1,Replica2,Replica3 compute
-    class Metrics,Rules scaling
+    class RG,Compute,Registry,Data,Identity,Monitoring,DNS rg
+    class CAE,CA,ACR,SQLS,SQLDB,MI,LA,Custom resource
 ```
 
 ---
@@ -410,78 +370,35 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph Perimeter["Network Security"]
-        WAF["Azure WAF\nOWASP Rules"]
-        DDoS["DDoS Protection"]
-        TLS["TLS 1.3 Termination"]
+        TLS["TLS/HTTPS"]
     end
 
     subgraph Application["Application Security"]
         Auth["Azure AD Auth"]
-        RBAC["Role-Based Access"]
-        Rate["Rate Limiting"]
+        RBAC["RBAC - Managed Identity"]
+        SQLAuth["SQL Authentication"]
     end
 
     subgraph Data["Data Security"]
-        Encryption["At-Rest Encryption"]
-        TLSData["TLS 1.3 in Transit"]
-        Masking["PII Masking"]
+        Encryption["Encryption at Rest"]
+        TLSData["TLS in Transit"]
     end
 
     subgraph Identity["Identity & Access"]
-        SP["Service Principals"]
-        MI["Managed Identity"]
-        Secrets["Key Vault"]
+        MI["Managed Identity\nid-hello-cicd-deploy"]
+        OIDC["OIDC Token"]
     end
 
-    %% Connections
     User -->|HTTPS| Perimeter
     Perimeter --> Application
     Application --> Data
-    Application -->|Secrets| Identity
+    Application -->|OIDC| Identity
 
-    %% Styling
     classDef security fill:#1a1a2e,stroke:#ff0000,stroke-width:2px,color:#fff
     classDef component fill:#2d2d44,stroke:#ff9900,stroke-width:1px,color:#fff
 
     class Perimeter,Application,Data,Identity security
-    class WAF,DDoS,TLS,Auth,RBAC,Rate,Encryption,TLSData,Masking,SP,MI,Secrets component
-```
-
----
-
-## Development Workflow
-
-```mermaid
-flowchart TD
-    subgraph Local["Local Development"]
-        Code[Write Code] --> TestLocal[Local Tests]
-        TestLocal --> Commit[Git Commit]
-        Commit --> Push[Git Push]
-    end
-
-    subgraph GitHub["GitHub"]
-        Push --> PR[Create Pull Request]
-        PR --> CI[CI Pipeline]
-        CI --> Review[Code Review]
-        Review -->|Approved| Merge[Merge to Main]
-        Review -->|Changes| Code
-    end
-
-    subgraph Deploy["Deployment"]
-        Merge --> Trigger[Trigger CD]
-        Trigger --> Build[Build & Push]
-        Build --> DeployACA[Deploy to ACA]
-        DeployACA --> Verify[Verify Deployment]
-    end
-
-    %% Styling
-    classDef workflow fill:#1a1a2e,stroke:#00ffff,stroke-width:2px,color:#fff
-    classDef action fill:#0f3460,stroke:#ff00ff,stroke-width:1px,color:#fff
-    classDef gate fill:#5c2d91,stroke:#ffff00,stroke-width:2px,color:#fff
-
-    class Local,GitHub,Deploy workflow
-    class Code,TestLocal,Commit,Push,PR,CI,Build,DeployACA,Verify action
-    class Review,Merge,Trigger gate
+    class TLS,Auth,RBAC,SQLAuth,Encryption,TLSData,MI,OIDC component
 ```
 
 ---
@@ -489,66 +406,63 @@ flowchart TD
 ## Project Structure
 
 ```mermaid
-graph TD
+flowchart TD
     root["hello-cicd/"]
-    
+
     root --> README["README.md"]
     root --> Docker["Dockerfile"]
     root --> dockerignore[".dockerignore"]
     root --> reqs["requirements.txt"]
     root --> wsgi["wsgi.py"]
+    root --> pytest["pytest.ini"]
     root --> gitignore[".gitignore"]
-    
+
     root --> app["app/"]
     app --> init["__init__.py"]
     app --> routes["routes/"]
     routes --> public["public.py"]
     routes --> admin["admin.py"]
-    routes --> api["api.py"]
     app --> models["models.py"]
     app --> services["services/"]
-    services --> subscription["subscription_service.py"]
+    services --> sub["subscription_service.py"]
     services --> user["user_service.py"]
-    
-    root --> docs["docs/"]
-    docs --> overview["overview.md"]
-    docs --> architecture["architecture/"]
-    architecture --> arch_overview["overview.md"]
-    architecture --> api["api.md"]
-    architecture --> data_models["data-models.md"]
-    docs --> deployment["deployment/"]
-    deployment --> azure["azure.md"]
-    deployment --> cicd["cicd.md"]
-    deployment --> monitoring["monitoring.md"]
-    docs --> development["development/"]
-    development --> setup["setup.md"]
-    development --> workflow["workflow.md"]
-    development --> testing["testing.md"]
-    docs --> guides["guides/"]
-    guides --> contributing["contributing.md"]
-    guides --> docker["docker.md"]
-    guides --> troubleshooting["troubleshooting.md"]
-    docs --> diagrams["diagrams.md"]
-    
+    app --> config["config.py"]
+
+    root --> tests["tests/"]
+    tests --> unit["unit/"]
+    unit --> test_regression["test_regression.py"]
+    unit --> test_sub_repo["test_subscriber_repository.py"]
+    unit --> test_sub_svc["test_subscription_service.py"]
+    tests --> integration["integration/"]
+    integration --> test_routes["test_routes.py"]
+    tests --> e2e["e2e/"]
+    e2e --> test_visitor["test_visitor_journey.py"]
+    e2e --> test_admin["test_admin_journey.py"]
+
     root --> github[".github/"]
     github --> workflows["workflows/"]
     workflows --> deploy["deploy.yml"]
-    
-    root --> scripts["scripts/"]
-    
-    %% Styling
+
+    root --> docs["docs/"]
+    docs --> overview["overview.md"]
+    docs --> diagrams["diagrams.md"]
+    docs --> visitor["visitor-journey.md"]
+    docs --> architecture["architecture/"]
+    docs --> deployment["deployment/"]
+    docs --> development["development/"]
+    docs --> guides["guides/"]
+
     classDef folder fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
     classDef file fill:#1a1a2e,stroke:#00ff00,stroke-width:1px,color:#fff
-    classDef root fill:#5c2d91,stroke:#fff,stroke-width:3px,color:#fff
 
     class root folder
-    class docs,app,github,scripts,architecture,deployment,development,guides,workflows,models,routes,services,files folder
-    class README,Docker,dockerignore,reqs,wsgi,gitignore,init,public,admin,api,overview,api,data_models,azure,cicd,monitoring,setup,workflow,testing,contributing,docker,troubleshooting,diagrams,deploy,subscription,user file
+    class docs,app,github,tests,routes,services,unit,integration,e2e,workflows,architecture,deployment,development,guides folder
+    class README,Docker,dockerignore,reqs,wsgi,pytest,gitignore,init,public,admin,models,sub,user,config,test_regression,test_sub_repo,test_sub_svc,test_routes,test_visitor,test_admin,deploy,overview,diagrams,visitor file
 ```
 
 ---
 
-[← Back to Home](README.md)
+[Back to Home](README.md)
 
 <style>
 .neon-page-header {
@@ -563,9 +477,7 @@ graph TD
   font-family: 'Courier New', monospace;
   font-size: 2rem;
   color: #fff;
-  text-shadow:
-    0 0 10px #ff00ff,
-    0 0 20px #ff00ff;
+  text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
   margin: 0;
 }
 </style>
