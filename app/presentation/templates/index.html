@@ -18,6 +18,61 @@
         </div>
     </div>
 </section>
+
+<section class="newsletters">
+    <div class="newsletters__container">
+        <h2 class="newsletters__title">Våra Nyhetsbrev</h2>
+        <p class="newsletters__intro">Välj de ämnen som passar dig - eller prenumerera på alla!</p>
+
+        <div class="newsletters__grid">
+            <div class="newsletter-card">
+                <div class="newsletter-card__icon">🥗</div>
+                <h3 class="newsletter-card__title">Kost & Näring</h3>
+                <p class="newsletter-card__desc">
+                    Kraftfulla recept, smarta kosttips och näringslära som boostar din träning.
+                    Lär dig äta för maximal energi och återhämtning.
+                </p>
+            </div>
+
+            <div class="newsletter-card">
+                <div class="newsletter-card__icon">🧠</div>
+                <h3 class="newsletter-card__title">Mindset</h3>
+                <p class="newsletter-card__desc">
+                    Mental styrka är nyckeln till framgång. Få verktyg för motivation, fokus
+                    och den mentala uthållighet som tar dig till nästa nivå.
+                </p>
+            </div>
+
+            <div class="newsletter-card">
+                <div class="newsletter-card__icon">🔬</div>
+                <h3 class="newsletter-card__title">Kunskap & Forskning</h3>
+                <p class="newsletter-card__desc">
+                    Senaste rönen inom träning och hälsa. Vetenskapligt grundade tips
+                    som hjälper dig träna smartare, inte bara hårdare.
+                </p>
+            </div>
+
+            <div class="newsletter-card">
+                <div class="newsletter-card__icon">💪</div>
+                <h3 class="newsletter-card__title">Veckans Pass</h3>
+                <p class="newsletter-card__desc">
+                    Ett nytt träningspass varje vecka! Från högintensiv intervallträning
+                    till styrka och stretch - variation som ger resultat.
+                </p>
+            </div>
+
+            <div class="newsletter-card newsletter-card--featured">
+                <div class="newsletter-card__icon">🤖</div>
+                <h3 class="newsletter-card__title">Träna med Jaine</h3>
+                <p class="newsletter-card__desc">
+                    Vår AI-tränare Jaine skapar personliga träningsprogram just för dig.
+                    Få skräddarsydda tips och coachning direkt i din inbox.
+                </p>
+                <span class="newsletter-card__badge">AI-Powered</span>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block extra_css %}
@@ -151,6 +206,147 @@
         .hero__cta {
             width: 100%;
             max-width: 300px;
+        }
+    }
+
+    /* Newsletters Section */
+    .newsletters {
+        padding: 4rem 2rem;
+        margin: 0 2rem 2rem 2rem;
+    }
+
+    .newsletters__container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .newsletters__title {
+        font-family: var(--font-heading);
+        font-size: 3rem;
+        text-align: center;
+        color: var(--neon-pink);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        text-shadow:
+            0 0 10px var(--neon-pink),
+            0 0 30px var(--neon-purple);
+    }
+
+    .newsletters__intro {
+        text-align: center;
+        color: var(--neon-cyan);
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+    }
+
+    .newsletters__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .newsletter-card {
+        background: linear-gradient(135deg, rgba(45, 10, 78, 0.9), rgba(26, 10, 46, 0.9));
+        border: 2px solid rgba(255, 20, 147, 0.4);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .newsletter-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 20, 147, 0.1),
+            transparent
+        );
+        transition: left 0.5s ease;
+    }
+
+    .newsletter-card:hover::before {
+        left: 100%;
+    }
+
+    .newsletter-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--neon-pink);
+        box-shadow:
+            0 10px 30px rgba(255, 20, 147, 0.3),
+            0 0 20px rgba(176, 38, 255, 0.2);
+    }
+
+    .newsletter-card--featured {
+        border-color: var(--neon-cyan);
+        background: linear-gradient(135deg, rgba(0, 50, 70, 0.9), rgba(26, 10, 46, 0.9));
+    }
+
+    .newsletter-card--featured:hover {
+        border-color: var(--neon-cyan);
+        box-shadow:
+            0 10px 30px rgba(0, 229, 255, 0.3),
+            0 0 20px rgba(0, 229, 255, 0.2);
+    }
+
+    .newsletter-card__icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .newsletter-card__title {
+        font-family: var(--font-heading);
+        font-size: 1.4rem;
+        color: var(--neon-yellow);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .newsletter-card__desc {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .newsletter-card__badge {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.3rem 1rem;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .newsletters {
+            padding: 3rem 1rem;
+            margin: 0 1rem 1rem 1rem;
+        }
+
+        .newsletters__title {
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .newsletters__intro {
+            font-size: 1rem;
+        }
+
+        .newsletters__grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>
