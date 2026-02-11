@@ -97,7 +97,8 @@ class TestVisitorJourney:
         page.click('button[type="submit"]')
 
         page.wait_for_load_state("networkidle")
-        assert 'value="My Name"' in page.content()
+        name_input = page.locator('input[name="name"]')
+        assert name_input.input_value() == "My Name"
 
     def test_navigation_links_work(self, page: Page, app_url, app_server):
         """Navigation links work correctly."""
@@ -110,7 +111,7 @@ class TestVisitorJourney:
         page.goto(f"{app_url}/subscribe")
         page.fill('input[name="email"]', "visitor3@example.com")
         page.fill('input[name="name"]', "Visitor Three")
-        page.click('input[name="nl_kost"]')
+        page.click('label:has(input[name="nl_kost"])')
         page.click('button[type="submit"]')
 
         back_link = page.locator("a:has-text('Back to Home')")
@@ -120,11 +121,11 @@ class TestVisitorJourney:
         """All newsletter options are displayed."""
         page.goto(f"{app_url}/subscribe")
 
-        assert page.locator('input[name="nl_kost"]').is_visible()
-        assert page.locator('input[name="nl_mindset"]').is_visible()
-        assert page.locator('input[name="nl_kunskap"]').is_visible()
-        assert page.locator('input[name="nl_veckans_pass"]').is_visible()
-        assert page.locator('input[name="nl_jaine"]').is_visible()
+        assert page.locator('label:has(input[name="nl_kost"])').is_visible()
+        assert page.locator('label:has(input[name="nl_mindset"])').is_visible()
+        assert page.locator('label:has(input[name="nl_kunskap"])').is_visible()
+        assert page.locator('label:has(input[name="nl_veckans_pass"])').is_visible()
+        assert page.locator('label:has(input[name="nl_jaine"])').is_visible()
 
     def test_form_has_required_fields(self, page: Page, app_url, app_server):
         """Form has correct required field markers."""

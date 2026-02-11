@@ -53,20 +53,3 @@ def page(browser):
 @pytest.fixture
 def app_url():
     return "http://localhost:5000"
-
-
-@pytest.fixture(scope="session")
-def admin_user(app_server):
-    """Create admin user for E2E tests."""
-    import requests
-    from app import create_app, db
-    from app.data.models import User
-
-    app = create_app()
-    with app.app_context():
-        if not User.query.filter_by(username="admin").first():
-            admin = User(username="admin")
-            admin.set_password("admin123")
-            db.session.add(admin)
-            db.session.commit()
-        yield {"username": "admin", "password": "admin123"}
