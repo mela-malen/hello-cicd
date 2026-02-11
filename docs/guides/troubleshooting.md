@@ -27,6 +27,17 @@ parent: Guides
 | `Port already in use` | Kill process: `lsof -ti :5000 | xargs kill` |
 | `Container won't start` | Check logs: `docker logs <container>` |
 
+### ODBC Driver Issues
+
+| Issue | Solution |
+|-------|----------|
+| `ImportError: libodbc.so.2: cannot open shared object file` | **Resolved**: The app now uses `pymssql` (pure Python) instead of pyodbc. No ODBC driver needed! |
+| `pyodbc import fails` | **Note**: The application now uses SQLAlchemy with pymssql driver instead of pyodbc. |
+
+### Database Connection
+
+The application now uses SQLAlchemy with pymssql driver for Azure SQL connections, which is a pure Python implementation and doesn't require external ODBC drivers.
+
 ### Azure Issues
 
 | Issue | Solution |

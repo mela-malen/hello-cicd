@@ -11,47 +11,98 @@ parent: Architecture
 
 ## High-Level Overview
 
+```mermaid
+graph TD
+    subgraph Users["Users"]
+        Browser["Web Browser"]
+        Mobile["Mobile Device"]
+    end
+
+    subgraph Azure["Azure Cloud - Sweden Central"]
+        subgraph Network["Network"]
+            CustomDomain["Custom Domain\ndeploj.se"]
+        end
+
+        subgraph Compute["Compute"]
+            ACA["Azure Container Apps\nca-hello-cicd"]
+            Container["hello-cicd Container"]
+        end
+
+        subgraph Registry["Container Registry"]
+            ACR["acrhellocicda593ac50\n.azurecr.io"]
+        end
+
+        subgraph Storage["Data"]
+            SQL["Azure SQL Database\ndeplojdb1"]
+        end
+
+        subgraph Observability["Observability"]
+            LogAnalytics["Log Analytics\nworkspace-rghellocicd"]
+        end
+    end
+
+    subgraph CI["CI/CD"]
+        GitHub["GitHub Actions\nBuild and Deploy"]
+    end
+
+    Users -->|HTTPS| CustomDomain
+    CustomDomain --> ACA
+    ACA --> Container
+    Container --> ACR
+    Container --> SQL
+    Container --> LogAnalytics
+    GitHub -->|Deploy| ACA
+    GitHub -->|Push Image| ACR
+
+    classDef azure fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
+    classDef compute fill:#00bcf2,stroke:#fff,stroke-width:2px,color:#000
+    classDef storage fill:#107c10,stroke:#fff,stroke-width:2px,color:#fff
+    classDef network fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
+    classDef users fill:#d83b01,stroke:#fff,stroke-width:2px,color:#fff
+
+    class Azure,Network,Compute,Storage,Observability azure
+    class ACA,Container compute
+    class ACR,SQL storage
+    class CustomDomain network
+    class Users,Browser,Mobile users
 ```
-┌────────────────────────────────────────────────────────────────────────────┐
-│                              USERS                                          │
-└────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-┌────────────────────────────────────────────────────────────────────────────┐
-│                         AZURE FRONT DOOR / CDN                              │
-│                         (Global Load Balancer)                             │
-└────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                    ┌─────────────────┼─────────────────┐
-                    ▼                 ▼                 ▼
-            ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-            │   Region 1   │  │   Region 2   │  │   Region 3   │
-            │  (East US)   │  │  (West EU)   │  │  (Asia Pac)  │
-            └──────────────┘  └──────────────┘  └──────────────┘
-                    │                 │                 │
-                    ▼                 ▼                 ▼
-            ┌─────────────────────────────────────────────────────┐
-            │              AZURE CONTAINER APPS                    │
-            │              (Kubernetes-based)                     │
-            │  ┌───────────┐  ┌───────────┐  ┌───────────┐        │
-            │  │  Pod 1    │  │  Pod 2    │  │  Pod N    │        │
-            │  │ (Flask)   │  │ (Flask)   │  │ (Flask)   │        │
-            │  └───────────┘  └───────────┘  └───────────┘        │
-            └─────────────────────────────────────────────────────┘
-                    │                 │                 │
-                    └─────────────────┼─────────────────┘
-                                      ▼
-            ┌─────────────────────────────────────────────────────┐
-            │              AZURE CONTAINER REGISTRY               │
-            │              (ACR)                                  │
-            └─────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-┌────────────────────────────────────────────────────────────────────────────┐
-│                           GITUB ACTIONS                                     │
-│                    (CI/CD Pipeline Controller)                              │
-└────────────────────────────────────────────────────────────────────────────┘
-```
+
+---
+
+### Real Azure Resources
+
+| Resource | Name | Type | Region |
+|----------|------|------|--------|
+| Resource Group | `rg-hello-cicd` | Resource Group | Sweden Central |
+| Container App | `ca-hello-cicd` | Microsoft.App/containerApps | Sweden Central |
+| Container App Environment | `cae-hello-cicd` | Microsoft.App/managedEnvironments | Sweden Central |
+| Container Registry | `acrhellocicda593ac50` | Microsoft.ContainerRegistry | Sweden Central |
+| SQL Server | `deplojdb` | Microsoft.Sql/servers | Sweden Central |
+| SQL Database | `deplojdb1` | Microsoft.Sql/servers/databases | Sweden Central |
+| Log Analytics | `workspace-rghellocicd` | Microsoft.OperationalInsights | Sweden Central |
+| Managed Identity | `id-hello-cicd-deploy` | Microsoft.ManagedIdentity | Sweden Central |
+| Custom Domain | `deploj.se` | Custom Domain | DNS |
+
+### Container App Configuration
+
+| Setting | Value |
+|---------|-------|
+| FQDN | `ca-hello-cicd.calmsky-c5b24015.swedencentral.azurecontainerapps.io` |
+| Target Port | 5000 |
+| CPU | 0.5 |
+| Memory | 1Gi |
+| Max Replicas | 10 |
+| Min Replicas | null (auto-scale) |
+| Active Revisions | Single |
+
+### Database Configuration
+
+| Setting | Value |
+|---------|-------|
+| Server | `deplojdb.database.windows.net` |
+| Database | `deplojdb1` |
+| SKU | `GP_S_Gen5` |
+| Status | Online |
 
 ---
 
@@ -59,64 +110,91 @@ parent: Architecture
 
 ### Clean Architecture Layers
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                            │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │  Routes/Controllers → Blueprints → Request Handlers      │  │
-│  │  Templates (Jinja2) → Static Assets → CSS/JS               │  │
-│  └───────────────────────────────────────────────────────────┘  │
-│                              │                                   │
-│                              ▼                                   │
-├─────────────────────────────────────────────────────────────────┤
-│                     BUSINESS LAYER                               │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │  Services → Use Cases → Business Rules → Validation        │  │
-│  └───────────────────────────────────────────────────────────┘  │
-│                              │                                   │
-│                              ▼                                   │
-├─────────────────────────────────────────────────────────────────┤
-│                      DATA LAYER                                  │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │  Repositories → Data Sources → ORM → Database             │  │
-│  └───────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Presentation["🎨 Presentation Layer"]
+        Routes["Routes / Blueprints"]
+        Views["Jinja2 Templates"]
+        Assets["Static Assets (CSS/JS)"]
+    end
+
+    subgraph Business["⚡ Business Logic Layer"]
+        Services["Domain Services"]
+        UseCases["Use Cases"]
+        Rules["Business Rules"]
+        Validation["Validation Logic"]
+    end
+
+    subgraph Data["💾 Data Layer"]
+        Repositories["Repositories"]
+        ORM["ORM (SQLAlchemy)"]
+        Models["Data Models"]
+    end
+
+    Routes --> Views
+    Routes --> Services
+    Services --> UseCases
+    UseCases --> Rules
+    Services --> Validation
+    Services --> Repositories
+    Repositories --> ORM
+    ORM --> Models
+
+    classDef layer fill:#1a1a2e,stroke:#00ffff,stroke-width:2px,color:#fff
+    classDef component fill:#16213e,stroke:#ff00ff,stroke-width:1px,color:#fff
+
+    class Presentation,Business,Data layer
+    class Routes,Views,Assets,Services,UseCases,Rules,Validation,Repositories,ORM,Models component
 ```
 
 ---
 
 ## Component Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           FLASK APPLICATION                              │
-│                                                                          │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    │
-│  │   Public BP     │    │    Admin BP      │    │    API BP       │    │
-│  │  ┌───────────┐  │    │  ┌───────────┐  │    │  ┌───────────┐  │    │
-│  │  │  /        │  │    │  │  /admin   │  │    │  │  /api/*   │  │    │
-│  │  │  /subscr  │  │    │  │  /subs    │  │    │  └───────────┘  │    │
-│  │  └───────────┘  │    │  └───────────┘  │    │                 │    │
-│  └────────┬────────┘    └────────┬────────┘    └────────┬────────┘    │
-│           │                      │                      │               │
-│           └──────────────────────┼──────────────────────┘               │
-│                                  │                                      │
-│                                  ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────┐    │
-│  │                      BUSINESS SERVICES                          │    │
-│  │  ┌─────────────────────┐  ┌─────────────────────────────────┐  │    │
-│  │  │ SubscriptionService │  │    OtherDomainServices...       │  │    │
-│  │  └─────────────────────┘  └─────────────────────────────────┘  │    │
-│  └─────────────────────────────────────────────────────────────────┘    │
-│                                  │                                      │
-│                                  ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────┐    │
-│  │                      DATA REPOSITORIES                          │    │
-│  │  ┌─────────────────────┐  ┌─────────────────────────────────┐  │    │
-│  │  │ SubscriberRepo      │  │    OtherRepositories...         │  │    │
-│  │  └─────────────────────┘  └─────────────────────────────────┘  │    │
-│  └─────────────────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Flask["Flask Application"]
+        subgraph Blueprints["📘 Blueprints"]
+            Public["Public Blueprint\n/"]
+            Admin["Admin Blueprint\n/admin"]
+            API["API Blueprint\n/api"]
+        end
+
+        subgraph Views["📄 Views"]
+            Home["Home View"]
+            Subscribe["Subscribe View"]
+            AdminDash["Admin Dashboard"]
+        end
+
+        subgraph Services["⚙️ Services"]
+            SubService["SubscriptionService"]
+            UserService["UserService"]
+        end
+
+        subgraph Repos["💾 Repositories"]
+            SubRepo["SubscriberRepository"]
+            UserRepo["UserRepository"]
+        end
+    end
+
+    subgraph Database["Database"]
+        Users["users table"]
+        Subscribers["subscribers table"]
+        Newsletters["newsletters table"]
+    end
+
+    Blueprints --> Views
+    Blueprints --> Services
+    Services --> Repos
+    Repos -->|SQLAlchemy| Database
+
+    classDef flask fill:#1a1a2e,stroke:#00ff00,stroke-width:2px,color:#fff
+    classDef component fill:#0d1b2a,stroke:#00ffff,stroke-width:1px,color:#fff
+    classDef db fill:#5c2d91,stroke:#fff,stroke-width:2px,color:#fff
+
+    class Flask flask
+    class Blueprints,Views,Services,Repos,Public,Admin,API,Home,Subscribe,AdminDash,SubService,UserService,SubRepo,UserRepo component
+    class Database,Users,Subscribers,Newsletters db
 ```
 
 ---
@@ -236,6 +314,7 @@ class Config:
 
 ## Related Documentation
 
+- [Visitor Journey](../visitor-journey.md) | User experience flow & conversion funnel
 - [API Reference](api.md)
 - [Data Models](data-models.md)
 - [Deployment Guide](../deployment/azure.md)

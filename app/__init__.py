@@ -1,7 +1,11 @@
 import os
+import logging
 from flask import Flask
 from .config import config
 from .data.models import db
+from sqlalchemy import text
+
+logger = logging.getLogger(__name__)
 
 
 def create_app(config_name: str | None = None) -> Flask:
@@ -14,16 +18,20 @@ def create_app(config_name: str | None = None) -> Flask:
         static_folder="presentation/static",
     )
 
-    # Load configuration (instantiate dataclass)
     app.config.from_object(config[config_name]())
 
-    # Initialize database
     db.init_app(app)
 
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            logger.info("Database tables created successfully")
+            
+            # Run migration to add missing columns
+            _run_migration()
+        except Exception as e:
+            logger.warning(f"Could not create database tables (may need migration): {e}")
 
-    # Register blueprints
     from .presentation.routes.public import bp as public_bp
     app.register_blueprint(public_bp)
 
@@ -31,3 +39,27 @@ def create_app(config_name: str | None = None) -> Flask:
     app.register_blueprint(admin_bp)
 
     return app
+
+
+def _run_migration():
+    """Run database migration to add missing columns."""
+    try:
+        result = db.session.execute(text("""
+            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_NAME = 'subscribers'
+            ORDER BY ORDINAL_POSITION
+        """))
+        columns = [row[0] for row in result]
+        
+        for col in ['nl_kost', 'nl_mindset', 'nl_kunskap', 'nl_veckans_pass', 'nl_jaine']:
+            if col not in columns:
+                logger.info(f"Adding missing column: {col}")
+                try:
+                    db.session.execute(text(f'ALTER TABLE subscribers ADD {col} BIT NOT NULL DEFAULT 0'))
+                    db.session.commit()
+                    logger.info(f"Successfully added column: {col}")
+                except Exception as e:
+                    db.session.rollback()
+                    logger.warning(f"Failed to add column {col}: {e}")
+    except Exception as e:
+        logger.warning(f"Migration check failed: {e}")

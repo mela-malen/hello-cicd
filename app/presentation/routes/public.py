@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, current_app
+import logging
 
 from app.business.services.subscription_service import SubscriptionService
 
 bp = Blueprint("public", __name__)
 
 subscription_service = SubscriptionService()
+
+logger = logging.getLogger(__name__)
 
 
 @bp.route("/")
@@ -22,7 +25,6 @@ def subscribe_confirm():
     email = request.form.get("email", "")
     name = request.form.get("name", "")
 
-    # Get newsletter selections
     newsletters = {
         'kost': 'nl_kost' in request.form,
         'mindset': 'nl_mindset' in request.form,
@@ -31,7 +33,17 @@ def subscribe_confirm():
         'jaine': 'nl_jaine' in request.form,
     }
 
-    result = subscription_service.subscribe(email, name, newsletters)
+    try:
+        result = subscription_service.subscribe(email, name, newsletters)
+    except Exception as e:
+        logger.error(f"Subscription error: {e}", exc_info=True)
+        return render_template(
+            "subscribe.html",
+            error=f"Database error: {str(e)}",
+            email=email,
+            name=name,
+            newsletters=newsletters,
+        ), 500
 
     if not result.success:
         return render_template(
