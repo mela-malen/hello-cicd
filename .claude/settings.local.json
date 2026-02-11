@@ -25,7 +25,8 @@
       "Bash(az sql db show-connection-string:*)",
       "Bash(az sql db query:*)",
       "Bash(az containerapp exec:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(gh variable:*)"
     ]
   }
 }
