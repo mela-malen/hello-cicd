@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - CM Corp{% endblock %}
+
+{% block content %}
+<div class="login">
+    <div class="login__card">
+        <h1 class="login__title">Admin Login</h1>
+        <p class="login__subtitle">Sign in to manage subscribers</p>
+
+        {% if error %}
+        <div class="login__error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" class="login__form">
+            <div class="login__field">
+                <label for="username" class="login__label">Username</label>
+                <input type="text" id="username" name="username" class="login__input" required autofocus>
+            </div>
+
+            <div class="login__field">
+                <label for="password" class="login__label">Password</label>
+                <input type="password" id="password" name="password" class="login__input" required>
+            </div>
+
+            <button type="submit" class="btn btn--primary login__button">Sign In</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 2rem;
+    }
+
+    .login__card {
+        background: linear-gradient(135deg, rgba(45, 10, 78, 0.95), rgba(26, 10, 46, 0.95));
+        border: 2px solid var(--neon-pink);
+        border-radius: 1.5rem;
+        padding: 3rem;
+        max-width: 400px;
+        width: 100%;
+        box-shadow:
+            0 0 30px rgba(255, 20, 147, 0.3),
+            0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .login__title {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        color: var(--neon-pink);
+        text-align: center;
+        margin-bottom: 0.5rem;
+        animation: neonGlow 2s ease-in-out infinite;
+    }
+
+    .login__subtitle {
+        color: var(--neon-cyan);
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+    }
+
+    .login__error {
+        background: rgba(255, 0, 0, 0.2);
+        border: 1px solid #ff4444;
+        color: #ff6666;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .login__form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .login__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .login__label {
+        color: var(--neon-yellow);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .login__input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 20, 147, 0.3);
+        border-radius: 0.5rem;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .login__input:focus {
+        outline: none;
+        border-color: var(--neon-pink);
+        box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+    }
+
+    .login__input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .login__button {
+        margin-top: 1rem;
+        width: 100%;
+    }
+</style>
+{% endblock %}

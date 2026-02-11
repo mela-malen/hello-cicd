@@ -1,34 +1,53 @@
-from dataclasses import dataclass, field
 from datetime import datetime
-
-
-@dataclass
-class Subscriber:
-    email: str
-    name: str
-    subscribed_at: datetime = field(default_factory=datetime.now)
+from app.data.models import db, Subscriber
 
 
 class SubscriberRepository:
-    def __init__(self):
-        self._subscribers: dict[str, Subscriber] = {}
-
-    def save(self, subscriber: Subscriber) -> Subscriber:
-        self._subscribers[subscriber.email] = subscriber
+    def save(self, email: str, name: str) -> Subscriber:
+        subscriber = Subscriber(email=email, name=name)
+        db.session.add(subscriber)
+        db.session.commit()
         return subscriber
 
     def find_by_email(self, email: str) -> Subscriber | None:
-        return self._subscribers.get(email)
+        return Subscriber.query.filter_by(email=email).first()
+
+    def find_by_id(self, subscriber_id: int) -> Subscriber | None:
+        return Subscriber.query.get(subscriber_id)
 
     def exists(self, email: str) -> bool:
-        return email in self._subscribers
+        return Subscriber.query.filter_by(email=email).first() is not None
 
-    def get_all(self):
-        """
-        Get all subscribers ordered by subscription date (newest first).
+    def get_all(self, sort_by: str = "date_desc") -> list[Subscriber]:
+        query = Subscriber.query
+        if sort_by == "date_asc":
+            query = query.order_by(Subscriber.subscribed_at.asc())
+        elif sort_by == "date_desc":
+            query = query.order_by(Subscriber.subscribed_at.desc())
+        elif sort_by == "name_asc":
+            query = query.order_by(Subscriber.name.asc())
+        elif sort_by == "name_desc":
+            query = query.order_by(Subscriber.name.desc())
+        elif sort_by == "email_asc":
+            query = query.order_by(Subscriber.email.asc())
+        elif sort_by == "email_desc":
+            query = query.order_by(Subscriber.email.desc())
+        else:
+            query = query.order_by(Subscriber.subscribed_at.desc())
+        return query.all()
 
-        Returns:
-            List of all Subscriber instances
-        """
-        subscribers = list(self._subscribers.values())
-        return sorted(subscribers, key=lambda s: s.subscribed_at, reverse=True)
+    def update(self, subscriber_id: int, email: str, name: str) -> Subscriber | None:
+        subscriber = self.find_by_id(subscriber_id)
+        if subscriber:
+            subscriber.email = email
+            subscriber.name = name
+            db.session.commit()
+        return subscriber
+
+    def delete(self, subscriber_id: int) -> bool:
+        subscriber = self.find_by_id(subscriber_id)
+        if subscriber:
+            db.session.delete(subscriber)
+            db.session.commit()
+            return True
+        return False

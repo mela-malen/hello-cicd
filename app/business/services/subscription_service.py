@@ -1,7 +1,8 @@
 import re
 from dataclasses import dataclass
 
-from app.data.repositories.subscriber_repository import Subscriber, SubscriberRepository
+from app.data.models import Subscriber
+from app.data.repositories.subscriber_repository import SubscriberRepository
 
 EMAIL_PATTERN = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
@@ -25,9 +26,10 @@ class SubscriptionService:
         normalized_email = self._normalize_email(email)
         normalized_name = self._normalize_name(name)
 
-        subscriber = Subscriber(email=normalized_email, name=normalized_name)
-        self._repository.save(subscriber)
+        if self._repository.exists(normalized_email):
+            return SubscriptionResult(success=False, error="Email already subscribed")
 
+        subscriber = self._repository.save(normalized_email, normalized_name)
         return SubscriptionResult(success=True, subscriber=subscriber)
 
     def _validate_email(self, email: str) -> tuple[bool, str]:
@@ -45,13 +47,28 @@ class SubscriptionService:
             return "Subscriber"
         return name.strip()
 
-    def get_all_subscribers(self):
-        """
-        Get all subscribers.
+    def get_all_subscribers(self, sort_by: str = "date_desc") -> list[Subscriber]:
+        return self._repository.get_all(sort_by)
 
-        Delegates to the repository for data access.
+    def get_subscriber(self, subscriber_id: int) -> Subscriber | None:
+        return self._repository.find_by_id(subscriber_id)
 
-        Returns:
-            List of all Subscriber instances, newest first
-        """
-        return self._repository.get_all()
+    def update_subscriber(self, subscriber_id: int, email: str, name: str) -> SubscriptionResult:
+        is_valid, error = self._validate_email(email)
+        if not is_valid:
+            return SubscriptionResult(success=False, error=error)
+
+        normalized_email = self._normalize_email(email)
+        normalized_name = self._normalize_name(name)
+
+        existing = self._repository.find_by_email(normalized_email)
+        if existing and existing.id != subscriber_id:
+            return SubscriptionResult(success=False, error="Email already in use")
+
+        subscriber = self._repository.update(subscriber_id, normalized_email, normalized_name)
+        if subscriber:
+            return SubscriptionResult(success=True, subscriber=subscriber)
+        return SubscriptionResult(success=False, error="Subscriber not found")
+
+    def delete_subscriber(self, subscriber_id: int) -> bool:
+        return self._repository.delete(subscriber_id)

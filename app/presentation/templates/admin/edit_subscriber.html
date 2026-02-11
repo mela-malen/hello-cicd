@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Subscriber - Admin - CM Corp{% endblock %}
+
+{% block content %}
+<div class="edit">
+    <div class="edit__card">
+        <h1 class="edit__title">Edit Subscriber</h1>
+
+        {% if error %}
+        <div class="edit__error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" class="edit__form">
+            <div class="edit__field">
+                <label for="email" class="edit__label">Email</label>
+                <input type="email" id="email" name="email" class="edit__input" value="{{ subscriber.email }}" required>
+            </div>
+
+            <div class="edit__field">
+                <label for="name" class="edit__label">Name</label>
+                <input type="text" id="name" name="name" class="edit__input" value="{{ subscriber.name }}" required>
+            </div>
+
+            <div class="edit__info">
+                <p><strong>Subscribed:</strong> {{ subscriber.subscribed_at.strftime("%Y-%m-%d %H:%M") }}</p>
+            </div>
+
+            <div class="edit__buttons">
+                <a href="{{ url_for('admin.subscribers') }}" class="btn btn--secondary">Cancel</a>
+                <button type="submit" class="btn btn--primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 2rem;
+    }
+
+    .edit__card {
+        background: linear-gradient(135deg, rgba(45, 10, 78, 0.95), rgba(26, 10, 46, 0.95));
+        border: 2px solid var(--neon-pink);
+        border-radius: 1.5rem;
+        padding: 3rem;
+        max-width: 500px;
+        width: 100%;
+        box-shadow:
+            0 0 30px rgba(255, 20, 147, 0.3),
+            0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .edit__title {
+        font-family: var(--font-heading);
+        font-size: 1.75rem;
+        color: var(--neon-pink);
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: neonGlow 2s ease-in-out infinite;
+    }
+
+    .edit__error {
+        background: rgba(255, 0, 0, 0.2);
+        border: 1px solid #ff4444;
+        color: #ff6666;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .edit__form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .edit__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .edit__label {
+        color: var(--neon-yellow);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .edit__input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 20, 147, 0.3);
+        border-radius: 0.5rem;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .edit__input:focus {
+        outline: none;
+        border-color: var(--neon-pink);
+        box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+    }
+
+    .edit__info {
+        background: rgba(0, 229, 255, 0.1);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        color: var(--neon-cyan);
+        font-size: 0.9rem;
+    }
+
+    .edit__info p {
+        margin: 0;
+    }
+
+    .edit__buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .edit__buttons .btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    .btn--secondary {
+        background: transparent;
+        border: 2px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+    }
+
+    .btn--secondary:hover {
+        background: var(--neon-cyan);
+        color: #1a0a2e;
+    }
+</style>
+{% endblock %}
