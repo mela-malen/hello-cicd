@@ -4,18 +4,22 @@
 
 {% block content %}
 <section class="hero">
+    <h1 class="hero__title">Feel the Burn!</h1>
     <div class="hero__container">
-        <h1 class="hero__title">Feel the sweat!</h1>
-        <p class="hero__subtitle">
-            Your weekly dose of high-energy health tips, power workouts, and total-body nutrition.
-            No pain, no gain &mdash; let's get physical!
-        </p>
-        <div class="hero__actions">
-            <a href="{{ url_for('public.subscribe') }}" class="btn btn--primary hero__cta">
-                Let's Get Physical
-            </a>
+        <div class="hero__content">
+            <img src="{{ url_for('static', filename='images/Jane.jpg') }}" alt="Jane Fonda workout" class="hero__image">
+            <div class="hero__text">
+                <p class="hero__subtitle">
+                    Your weekly dose of high-energy health tips, power workouts, and total-body nutrition.
+                    No pain, no gain &mdash; let's get physical!
+                </p>
+                <div class="hero__actions">
+                    <a href="{{ url_for('public.subscribe') }}" class="btn btn--primary hero__cta">
+                        Let's Get Physical
+                    </a>
+                </div>
+            </div>
         </div>
-        <img src="{{ url_for('static', filename='images/Jane.jpg') }}" alt="Jane Fonda workout" class="hero__image">
     </div>
 </section>
 {% endblock %}
@@ -27,12 +31,13 @@
         border: 3px solid var(--neon-pink);
         border-radius: 0;
         color: white;
-        padding: 6rem 2rem;
+        padding: 4rem 2rem;
         text-align: center;
         min-height: 60vh;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         margin: 2rem;
         position: relative;
         overflow: hidden;
@@ -58,15 +63,42 @@
         pointer-events: none;
     }
 
+    .hero__title {
+        font-family: var(--font-heading);
+        font-size: 5rem;
+        font-weight: 400;
+        margin-bottom: 3rem;
+        line-height: 1.1;
+        color: var(--neon-yellow);
+        text-transform: uppercase;
+        letter-spacing: 6px;
+        animation: neonGlow 2s ease-in-out infinite;
+        text-shadow:
+            0 0 10px var(--neon-yellow),
+            0 0 30px var(--neon-pink),
+            0 0 50px var(--neon-purple);
+        position: relative;
+        z-index: 2;
+        width: 100%;
+    }
+
     .hero__container {
-        max-width: 800px;
+        max-width: 900px;
         margin: 0 auto;
         position: relative;
         z-index: 1;
+        width: 100%;
+    }
+
+    .hero__content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
     }
 
     .hero__image {
-        max-width: 280px;
+        max-width: 300px;
         width: 100%;
         height: auto;
         border-radius: 0.5rem;
@@ -74,35 +106,18 @@
         box-shadow:
             0 0 20px rgba(255, 20, 147, 0.4),
             0 0 40px rgba(176, 38, 255, 0.2);
-        margin-top: 3rem;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
         object-fit: cover;
+        flex-shrink: 0;
     }
 
-    .hero__title {
-        font-family: var(--font-heading);
-        font-size: 4rem;
-        font-weight: 400;
-        margin-bottom: 1.5rem;
-        line-height: 1.1;
-        color: var(--neon-yellow);
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        animation: neonGlow 2s ease-in-out infinite;
-        text-shadow:
-            0 0 10px var(--neon-yellow),
-            0 0 30px var(--neon-pink),
-            0 0 50px var(--neon-purple);
+    .hero__text {
+        text-align: left;
+        max-width: 400px;
     }
 
     .hero__subtitle {
-        font-size: 1.3rem;
-        margin-bottom: 2.5rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
         line-height: 1.8;
         color: rgba(255, 255, 255, 0.9);
         font-weight: 600;
@@ -112,13 +127,12 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
+        align-items: flex-start;
     }
 
     .hero__cta {
-        font-size: 1.2rem;
-        padding: 1.1rem 3rem;
+        font-size: 1.1rem;
+        padding: 1rem 2.5rem;
         background: linear-gradient(135deg, var(--neon-pink), var(--neon-yellow));
         color: #1a0a2e;
         border: none;
@@ -141,13 +155,27 @@
 
     @media (max-width: 768px) {
         .hero {
-            padding: 4rem 1.5rem;
+            padding: 3rem 1.5rem;
             margin: 1rem;
         }
 
         .hero__title {
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+            font-size: 2.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+        }
+
+        .hero__content {
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .hero__image {
+            max-width: 250px;
+        }
+
+        .hero__text {
+            text-align: center;
         }
 
         .hero__subtitle {
@@ -155,6 +183,7 @@
         }
 
         .hero__actions {
+            align-items: center;
             width: 100%;
         }
 
