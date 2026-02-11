@@ -28,11 +28,12 @@ nav_order: 1
 |------------|---------|
 | **Python 3.11+** | Backend runtime |
 | **Flask 3.x** | Web framework |
+| **Flask-SQLAlchemy** | Database ORM |
+| **Azure SQL Database** | Production database |
 | **Gunicorn** | WSGI server |
 | **Docker** | Containerization |
-| **Azure** | Cloud deployment |
+| **Azure Container Apps** | Cloud deployment |
 | **GitHub Actions** | CI/CD pipeline |
-| **Jira** | Project management |
 
 ---
 
@@ -59,9 +60,31 @@ docker build -t hello-cicd:latest .
 
 ```
 GitHub Push → GitHub Actions → Azure Container Registry → Azure Container Apps
-                              ↓
-                    Health Check & Verification
+                              ↓                                    ↓
+                    Health Check & Verification          Azure SQL Database
 ```
+
+---
+
+## 🔐 Admin Panel
+
+The application includes a protected admin panel for managing newsletter subscribers.
+
+**URL:** `/admin/login`
+
+**Features:**
+| Feature | Description |
+|---------|-------------|
+| Authentication | Session-based login with password hashing |
+| Subscriber List | View all subscribers with sorting options |
+| Sorting | By date, name, or email (ascending/descending) |
+| Edit | Modify subscriber name and email |
+| Delete | Remove individual or multiple subscribers |
+| Export | Copy emails to clipboard (Outlook format) |
+
+**Database Tables:**
+- `users` - Admin user accounts
+- `subscribers` - Newsletter subscribers
 
 ---
 

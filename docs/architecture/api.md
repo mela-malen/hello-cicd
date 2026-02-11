@@ -23,8 +23,14 @@ parent: Architecture
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|----------------|
-| GET | `/admin` | Admin dashboard | ✅ Yes |
+| GET | `/admin/login` | Login page | No |
+| POST | `/admin/login` | Process login | No |
+| GET | `/admin/logout` | Logout | No |
 | GET | `/admin/subscribers` | List subscribers | ✅ Yes |
+| GET | `/admin/subscribers/<id>/edit` | Edit subscriber form | ✅ Yes |
+| POST | `/admin/subscribers/<id>/edit` | Update subscriber | ✅ Yes |
+| POST | `/admin/subscribers/<id>/delete` | Delete subscriber | ✅ Yes |
+| POST | `/admin/subscribers/delete-multiple` | Bulk delete | ✅ Yes |
 
 ---
 
@@ -118,52 +124,104 @@ curl -X POST https://api.hello-cicd.com/subscribe/confirm \
 
 ## Admin Endpoints
 
-### GET /admin
+### GET /admin/login
 
-Admin dashboard overview.
+Login page for administrators.
 
-**Requires:** Admin authentication
+**Response:** `200 OK` - Renders `admin/login.html`
 
-**Response:** `200 OK` - Renders admin dashboard template
+---
+
+### POST /admin/login
+
+Process admin login.
+
+**Request Body:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `username` | `string` | Yes | Admin username |
+| `password` | `string` | Yes | Admin password |
+
+**Success Response:** `302 Redirect` to `/admin/subscribers`
+
+**Error Response:** `200 OK` - Renders login page with error message
 
 ---
 
 ### GET /admin/subscribers
 
-List all subscribers.
+List all subscribers with sorting.
 
 **Requires:** Admin authentication
 
 **Query Parameters:**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `page` | `int` | 1 | Page number |
-| `per_page` | `int` | 50 | Items per page |
-| `sort` | `string` | `date` | Sort field |
+| Parameter | Type | Default | Options |
+|-----------|------|---------|---------|
+| `sort` | `string` | `date_desc` | `date_desc`, `date_asc`, `name_asc`, `name_desc`, `email_asc`, `email_desc` |
 
-**Response:** `200 OK`
+**Response:** `200 OK` - Renders `admin/subscribers.html`
+
+---
+
+### GET /admin/subscribers/<id>/edit
+
+Edit subscriber form.
+
+**Requires:** Admin authentication
+
+**Response:** `200 OK` - Renders `admin/edit_subscriber.html`
+
+---
+
+### POST /admin/subscribers/<id>/edit
+
+Update subscriber data.
+
+**Requires:** Admin authentication
+
+**Request Body:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `email` | `string` | Yes | New email address |
+| `name` | `string` | Yes | New name |
+
+**Success Response:** `302 Redirect` to `/admin/subscribers`
+
+---
+
+### POST /admin/subscribers/<id>/delete
+
+Delete a single subscriber.
+
+**Requires:** Admin authentication
+
+**Response:** `302 Redirect` to `/admin/subscribers`
+
+---
+
+### POST /admin/subscribers/delete-multiple
+
+Bulk delete multiple subscribers.
+
+**Requires:** Admin authentication
+
+**Request Body (JSON):**
 
 ```json
 {
-  "subscribers": [
-    {
-      "email": "user1@example.com",
-      "name": "User 1",
-      "subscribed_at": "2024-01-15T10:30:00Z"
-    },
-    {
-      "email": "user2@example.com",
-      "name": "User 2",
-      "subscribed_at": "2024-01-14T15:45:00Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "per_page": 50,
-    "total": 150,
-    "pages": 3
-  }
+  "ids": [1, 2, 3]
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "deleted": 3
 }
 ```
 
@@ -171,13 +229,28 @@ List all subscribers.
 
 ## Data Models
 
-### Subscriber
+### User (SQLAlchemy)
 
 ```python
-@dataclass
-class Subscriber:
-    email: str          # Primary key
-    name: str           # Display name
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id: int              # Primary key
+    username: str        # Unique username
+    password_hash: str   # Hashed password (scrypt)
+    is_active: bool      # Account status
+    created_at: datetime # Auto-generated
+```
+
+### Subscriber (SQLAlchemy)
+
+```python
+class Subscriber(db.Model):
+    __tablename__ = 'subscribers'
+
+    id: int              # Primary key
+    email: str           # Unique email address
+    name: str            # Display name
     subscribed_at: datetime  # Auto-generated
 ```
 
