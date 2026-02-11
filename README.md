@@ -88,6 +88,20 @@ The application includes a protected admin panel for managing newsletter subscri
 
 ---
 
+## 📧 Nyhetsbrev
+
+Plattformen erbjuder 5 olika nyhetsbrev:
+
+| Nyhetsbrev | Beskrivning |
+|------------|-------------|
+| 🥗 **Kost & Näring** | Kraftfulla recept, kosttips och näringslära för maximal energi |
+| 🧠 **Mindset** | Mental styrka, motivation och fokus för att nå nästa nivå |
+| 🔬 **Kunskap & Forskning** | Vetenskapligt grundade tips - träna smartare, inte bara hårdare |
+| 💪 **Veckans Pass** | Nya träningspass varje vecka - HIIT, styrka och stretch |
+| 🤖 **Träna med Jaine** | AI-tränare som skapar personliga träningsprogram |
+
+---
+
 ## 💻 Supported Platforms
 
 | OS | Version | Shell | Status |
