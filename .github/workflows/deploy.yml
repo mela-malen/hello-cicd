@@ -42,6 +42,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     needs: test
+    outputs:
+      fqdn: ${{ steps.verify.outputs.FQDN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -72,14 +74,40 @@ jobs:
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
       - name: Verify deployment
+        id: verify
         run: |
           FQDN=$(az containerapp show \
             --name ${{ vars.CONTAINER_APP }} \
             --resource-group ${{ vars.RESOURCE_GROUP }} \
             --query "properties.configuration.ingress.fqdn" -o tsv)
+          echo "FQDN=$FQDN" >> $GITHUB_OUTPUT
+          echo "Production URL: https://$FQDN"
           for i in 1 2 3 4 5; do
             curl -sf "https://$FQDN" && exit 0
             echo "Attempt $i failed, retrying in 10s..."
             sleep 10
           done
           echo "Health check failed after 5 attempts!" && exit 1
+
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest playwright requests
+
+      - name: Install Playwright browsers
+        run: playwright install chromium
+
+      - name: Run production smoke test
+        run: |
+          python test_production.py "https://${{ needs.build-and-deploy.outputs.fqdn }}"
