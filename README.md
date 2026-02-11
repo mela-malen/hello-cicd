@@ -78,7 +78,9 @@ The application includes a protected admin panel for managing newsletter subscri
 | Authentication | Session-based login with password hashing |
 | Subscriber List | View all subscribers with sorting options |
 | Sorting | By date, name, or email (ascending/descending) |
-| Edit | Modify subscriber name and email |
+| Newsletter Filter | Filter subscribers by specific newsletter |
+| Edit | Modify subscriber name, email, and newsletter subscriptions |
+| Bulk Newsletter | Add/remove newsletters for multiple subscribers at once |
 | Delete | Remove individual or multiple subscribers |
 | Export | Copy emails to clipboard (Outlook format) |
 
@@ -89,6 +91,8 @@ The application includes a protected admin panel for managing newsletter subscri
 ---
 
 ## 📧 Nyhetsbrev
+
+Prenumeranter väljer nyhetsbrev via formuläret på `/subscribe`. Varje nyhetsbrev lagras som en separat kolumn i databasen.
 
 Plattformen erbjuder 5 olika nyhetsbrev:
 
