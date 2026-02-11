@@ -73,6 +73,11 @@ jobs:
               DB_USERNAME=${{ secrets.DB_USERNAME }} \
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
+      - name: Run database migration
+        run: |
+          pip install -r requirements.txt
+          python migrate_db.py
+
       - name: Verify deployment
         id: verify
         run: |
