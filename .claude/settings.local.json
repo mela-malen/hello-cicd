@@ -26,7 +26,8 @@
       "Bash(az sql db query:*)",
       "Bash(az containerapp exec:*)",
       "Bash(xargs:*)",
-      "Bash(gh variable:*)"
+      "Bash(gh variable:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
