@@ -8,13 +8,14 @@
 \usepackage{xcolor}
 \usepackage{tcolorbox}
 \usepackage{fontawesome5}
-\usepackage{titlesec}
+\usepackage[nobottomtitles*]{titlesec}
 \usepackage{parskip}
 \usepackage{sourcesanspro}
 \usepackage{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{positioning, calc, shapes.geometric}
 \usepackage{booktabs}
+\usepackage{placeins}
 \usepackage{amssymb}
 \usepackage{fancyhdr}
 \usepackage[first=1, last=6]{lcg}% For random numbers
@@ -302,9 +303,9 @@ The platform is designed to work seamlessly across major operating systems and d
 \section{Architecture Design}
 % ==========================================
 
+\FloatBarrier
 \subsection{High-Level Architecture}
 
-\needspace{7cm}
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=1.5cm,
@@ -364,10 +365,10 @@ newsletter/
 	\end{scriptsize}
 \end{techbox}
 
-\needspace{6cm}
+\FloatBarrier
+\needspace{10cm}
 \subsection{Data Models}
 
-\needspace{6cm}
 \vspace{0.5cm}
 \begin{center}
 	\begin{tikzpicture}[
