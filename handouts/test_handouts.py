@@ -43,7 +43,7 @@ class LaTeXTestFramework:
         self.test_content_present("Page numbering format", r"\\thepage.*total\{page\}|/.*total")
 
         # Version and date
-        self.test_content_present("Version number", r"v1\.0|Version.*1\.0")
+        self.test_content_present("Version number", r"v\\versionnumber|Version.*\\versionnumber|versionnumber")
         self.test_content_present("Generation date", r"\\today|Generated:")
 
         # Build info

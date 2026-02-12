@@ -1,5 +1,7 @@
 \documentclass[11pt, a4paper]{article}
 
+\input{version.tex}
+
 \usepackage[a4paper, margin=3.5cm, headheight=20pt, includehead, includefoot, marginparwidth=2.5cm, marginparsep=0.5cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -11,7 +13,7 @@
 \usepackage{sourcesanspro}
 \usepackage{hyperref}
 \usepackage{tikz}
-\usetikzlibrary{positioning, calc}
+\usetikzlibrary{positioning, calc, shapes.geometric}
 \usepackage{booktabs}
 \usepackage{amssymb}
 \usepackage{fancyhdr}
@@ -52,8 +54,8 @@
 \fancyhead[L]{\textcolor{brandblue}{\textbf{DePLOJ}}}
 \fancyhead[R]{\texttt{Newsletter} - CM Corp}
 \fancyfoot[C]{\thepage\ / \total{page}}
-\fancyfoot[R]{\today\ | v1.0}
-\fancyfoot[L]{\texttt{Build: dev}}
+\fancyfoot[R]{\today\ | v\versionnumber}
+\fancyfoot[L]{\texttt{Build: \gitcommit}}
 
 % --- PAGE NUMBER TOTAL ---
 \regtotcounter{page}
@@ -144,65 +146,6 @@
     pdfpagemode=FullScreen,
 }
 
-% 2. STEP BY STEP - Cyan/Mint
-\newtcolorbox{stepbox}[1]{
-  enhanced, breakable,
-  colback=lightblue!20, colframe=accentteal!80!branddark,
-  coltitle=white,
-  fonttitle=\bfseries\large,
-  title={\faListOl\ \ #1},
-  arc=5mm, boxrule=1.5mm,
-  left=5mm, right=5mm, top=5mm, bottom=5mm,
-  breakable,
-  before skip=1cm, after skip=1cm
-}
-
-% 3. IMPORTANT - Red/Orange
-\newtcolorbox{importantbox}[1]{
-  enhanced,
-  colback=lightblue!15, colframe=accentgold!80!branddark,
-  coltitle=white,
-  fonttitle=\bfseries\large,
-  title={\faExclamationTriangle\ \ #1},
-  arc=5mm, boxrule=1.5mm,
-  left=5mm, right=5mm, top=5mm, bottom=5mm,
-  before skip=1cm, after skip=1cm
-}
-
-% 4. TECHNICAL - Yellow/Orange
-\newtcolorbox{techbox}[1]{
-  enhanced,
-  colback=softgray, colframe=mediumgray,
-  coltitle=white,
-  fonttitle=\bfseries\large,
-  title={\faCogs\ \ #1},
-  arc=2mm, boxrule=1mm,
-  left=5mm, right=5mm, top=5mm, bottom=5mm,
-  breakable,
-  before skip=1cm, after skip=1cm
-}
-
-% 5. FEATURE - Neon Cyan
-\newtcolorbox{featurebox}[1]{
-  enhanced, breakable,
-  colback=lightblue!40, colframe=accentblue,
-  coltitle=white,
-  fonttitle=\bfseries\large,
-  title={\faStar\ \ #1},
-  arc=5mm, boxrule=1.5mm,
-  breakable,
-  before skip=1cm, after skip=1cm
-}
-
-% --- HYPERREF ---
-\hypersetup{
-    colorlinks=true,
-    linkcolor=brandblue,
-    urlcolor=accentblue,
-    pdftitle={Newsletter - CM Corp Project Documentation},
-    pdfpagemode=FullScreen,
-}
-
 % --- TITLE ---
 \title{
     \color{brandblue}
@@ -213,7 +156,7 @@
 }
 \author{\textbf{Team DePLOJ} \\
 Arbiona, Claude, Fredrick, Martina, Mikaela, Nahrin}
-\date{\textbf{Generated:} \today \quad \textbf{Version:} 1.0}
+\date{\textbf{Generated:} \today \quad \textbf{Version:} \versionnumber}
 
 \begin{document}
 
@@ -235,7 +178,7 @@ Arbiona, Claude, Fredrick, Martina, Mikaela, Nahrin}
 \end{center}
 \vfill
 \begin{center}
-	{\small \texttt{Newsletter v1.0 | Generated: \today}}
+	{\small \texttt{Newsletter v\versionnumber\ | Generated: \today}}
 \end{center}
 \newpage
 
@@ -441,7 +384,7 @@ newsletter/
 
 		\draw[arrow, draw=accentblue] (subscribers) -- node[above right] {M:N} (newsletters);
 
-		\node (subs) at (0, -1.5) [box, draw=accentblue, fill=lightblue!10] {\faArrowsH\ subscriptions};
+		\node (subs) at (0, -1.5) [box, draw=accentblue, fill=lightblue!10] {\faLink\ subscriptions};
 
 		\draw[arrow, draw=brandblue, dashed] (subscribers) -- (subs);
 
@@ -565,7 +508,7 @@ The Newsletter platform implements a carefully designed conversion funnel to max
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.4cm,
-			funnel/.style={trapezoid, fill=lightblue!20, draw=brandblue, minimum width=5cm, minimum height=0.8cm, trapezoid left angle=110, trapezoid right angle=70},
+			funnel/.style={trapezium, fill=lightblue!20, draw=brandblue, minimum width=5cm, minimum height=0.8cm, trapezium left angle=110, trapezium right angle=70},
 			drop/.style={rectangle, rounded corners, fill=lightblue!10, draw=mediumgray, minimum width=4cm, minimum height=0.6cm},
 			arrow/.style={thick,->,>=stealth, draw=accentblue}
 		]
@@ -610,11 +553,11 @@ The Newsletter platform implements a carefully designed conversion funnel to max
 		]
 
 		\node (login) [admin] {\faLock\ \textbf{Admin Login}};
-		\node (dashboard) [action, below=0.8cm of login] {\faDashboard\ \textbf{Dashboard}};
+		\node (dashboard) [action, below=0.8cm of login] {\faCogs\ \textbf{Dashboard}};
 		\node (manage) [admin, below=0.8cm of dashboard] {\faUsers\ \textbf{Manage Subscribers}};
 		\node (bulk) [action, below=0.8cm of manage] {\faTasks\ \textbf{Bulk Actions}};
-		\node (export) [admin, below=0.8cm of bulk] {\faExport\ \textbf{Export Emails}};
-		\node (logout) [action, below=0.8cm of export] {\faSignOutAlt\ \textbf{Logout}};
+		\node (export) [admin, below=0.8cm of bulk] {\faShare\ \textbf{Export Emails}};
+		\node (logout) [action, below=0.8cm of export] {\faPowerOff\ \textbf{Logout}};
 
 		\draw[arrow] (login) -- (dashboard);
 		\draw[arrow] (dashboard) -- (manage);
@@ -750,11 +693,11 @@ The \textbf{Newsletter} platform represents a complete, production-ready subscri
 \end{center}
 \vspace{0.5cm}
 \begin{center}
-	{\small \texttt{Newsletter v1.0 | CM Corp | Generated: \today}}
+	{\small \texttt{Newsletter v\versionnumber\ | CM Corp | Generated: \today}}
 \end{center}
 \vspace{0.5cm}
 \begin{center}
-	{\small \texttt{Newsletter v1.0 | CM Corp | Generated: \today}}
+	{\small \texttt{Newsletter v\versionnumber\ | CM Corp | Generated: \today}}
 \end{center}
 
 \end{document}
