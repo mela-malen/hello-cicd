@@ -27,26 +27,26 @@
 \addtolength{\topmargin}{-1cm}   % Adjust top margin
 \addtolength{\footskip}{0.5cm}   % More space for footer
 
-% --- 80s NEON SPANDEX AEROBICS PALETTE ---
-\definecolor{neonpink}{RGB}{255, 0, 255}
-\definecolor{neoncyan}{RGB}{0, 255, 255}
-\definecolor{pastelpink}{RGB}{255, 182, 193}
-\definecolor{pastelcyan}{RGB}{175, 238, 238}
-\definecolor{softbg}{RGB}{250, 250, 250}
-\definecolor{darkgrey}{RGB}{45, 52, 54}
-\definecolor{sweettea}{RGB}{244, 208, 63}
-\definecolor{energypink}{RGB}{255, 105, 180}
-\definecolor{mintfresh}{RGB}{0, 206, 209}
+% --- CORPORATE COLOR PALETTE ---
+\definecolor{brandblue}{RGB}{0, 82, 147}
+\definecolor{branddark}{RGB}{25, 55, 95}
+\definecolor{accentblue}{RGB}{0, 124, 195}
+\definecolor{lightblue}{RGB}{217, 237, 247}
+\definecolor{softgray}{RGB}{248, 249, 250}
+\definecolor{mediumgray}{RGB}{108, 117, 125}
+\definecolor{darkgray}{RGB}{33, 37, 41}
+\definecolor{accentgold}{RGB}{255, 193, 7}
+\definecolor{accentteal}{RGB}{32, 178, 170}
 
 % --- GLOBAL LAYOUT ---
 \tcbuselibrary{skins, breakable}
 \renewcommand{\familydefault}{\sfdefault}
-\color{darkgrey}
+\color{darkgray}
 
 % --- HEADER/FOOTER ---
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\textcolor{neonpink}{\textbf{DePLOJ}}}
+\fancyhead[L]{\textcolor{brandblue}{\textbf{DePLOJ}}}
 \fancyhead[R]{\texttt{Newsletter} - CM Corp}
 \fancyfoot[C]{\thepage\ / \total{page}}
 \fancyfoot[R]{\today\ | v1.0}
@@ -56,23 +56,23 @@
 
 % --- HEADER STYLING ---
 \titleformat{\section}
-{\color{neonpink}\Huge\bfseries}
+{\color{brandblue}\Huge\bfseries}
 {\thesection}{1em}{}[\vspace{0.5cm}]
 
 \titleformat{\subsection}
-{\color{neoncyan}\LARGE\bfseries}
+{\color{accentblue}\LARGE\bfseries}
 {\thesubsection}{1em}{}[\vspace{0.3cm}]
 
 \titleformat{\subsubsection}
-{\color{energypink}\Large\bfseries}
+{\color{brandblue}\Large\bfseries}
 {\thesubsubsection}{1em}{}[\vspace{0.2cm}]
 
 % --- CUSTOM BOX DEFINITIONS ---
 
-% 1. KEY INSIGHT - Pink
+% 1. KEY INSIGHT - Blue
 \newtcolorbox{insightbox}[1]{
   enhanced, breakable,
-  colback=pastelpink!20, colframe=neonpink,
+  colback=lightblue!30, colframe=brandblue,
   coltitle=white,
   fonttitle=\bfseries\large,
   title={\faLightbulb\ \ Key Insight: #1},
@@ -82,10 +82,68 @@
   before skip=1cm, after skip=1cm
 }
 
+% 2. STEP BY STEP - Teal/Blue
+\newtcolorbox{stepbox}[1]{
+  enhanced, breakable,
+  colback=lightblue!20, colframe=accentteal!80!branddark,
+  coltitle=white,
+  fonttitle=\bfseries\large,
+  title={\faListOl\ \ #1},
+  arc=5mm, boxrule=1.5mm,
+  left=5mm, right=5mm, top=5mm, bottom=5mm,
+  breakable,
+  before skip=1cm, after skip=1cm
+}
+
+% 3. IMPORTANT - Gold/Orange
+\newtcolorbox{importantbox}[1]{
+  enhanced,
+  colback=lightblue!15, colframe=accentgold!80!branddark,
+  coltitle=white,
+  fonttitle=\bfseries\large,
+  title={\faExclamationTriangle\ \ #1},
+  arc=5mm, boxrule=1.5mm,
+  left=5mm, right=5mm, top=5mm, bottom=5mm,
+  before skip=1cm, after skip=1cm
+}
+
+% 4. TECHNICAL - Gray/Blue
+\newtcolorbox{techbox}[1]{
+  enhanced,
+  colback=softgray, colframe=mediumgray,
+  coltitle=white,
+  fonttitle=\bfseries\large,
+  title={\faCogs\ \ #1},
+  arc=2mm, boxrule=1mm,
+  left=5mm, right=5mm, top=5mm, bottom=5mm,
+  before skip=1cm, after skip=1cm
+}
+
+% 5. FEATURE - Accent Blue
+\newtcolorbox{featurebox}[1]{
+  enhanced, breakable,
+  colback=lightblue!40, colframe=accentblue,
+  coltitle=white,
+  fonttitle=\bfseries\large,
+  title={\faStar\ \ #1},
+  arc=5mm, boxrule=1.5mm,
+  breakable,
+  before skip=1cm, after skip=1cm
+}
+
+% --- HYPERREF ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=brandblue,
+    urlcolor=accentblue,
+    pdftitle={Newsletter - CM Corp Project Documentation},
+    pdfpagemode=FullScreen,
+}
+
 % 2. STEP BY STEP - Cyan/Mint
 \newtcolorbox{stepbox}[1]{
   enhanced, breakable,
-  colback=pastelcyan!20, colframe=mintfresh!80!black,
+  colback=lightblue!20, colframe=accentteal!80!branddark,
   coltitle=white,
   fonttitle=\bfseries\large,
   title={\faListOl\ \ #1},
@@ -98,7 +156,7 @@
 % 3. IMPORTANT - Red/Orange
 \newtcolorbox{importantbox}[1]{
   enhanced,
-  colback=pastelpink!15, colframe=energypink!80!red,
+  colback=lightblue!15, colframe=accentgold!80!branddark,
   coltitle=white,
   fonttitle=\bfseries\large,
   title={\faExclamationTriangle\ \ #1},
@@ -110,7 +168,7 @@
 % 4. TECHNICAL - Yellow/Orange
 \newtcolorbox{techbox}[1]{
   enhanced,
-  colback=sweettea!20, colframe=sweettea!60!orange,
+  colback=softgray, colframe=mediumgray,
   coltitle=white,
   fonttitle=\bfseries\large,
   title={\faCogs\ \ #1},
@@ -123,7 +181,7 @@
 % 5. FEATURE - Neon Cyan
 \newtcolorbox{featurebox}[1]{
   enhanced, breakable,
-  colback=pastelcyan!30, colframe=neoncyan,
+  colback=lightblue!40, colframe=accentblue,
   coltitle=white,
   fonttitle=\bfseries\large,
   title={\faStar\ \ #1},
@@ -135,19 +193,19 @@
 % --- HYPERREF ---
 \hypersetup{
     colorlinks=true,
-    linkcolor=neonpink,
-    urlcolor=neoncyan,
+    linkcolor=brandblue,
+    urlcolor=accentblue,
     pdftitle={Newsletter - CM Corp Project Documentation},
     pdfpagemode=FullScreen,
 }
 
 % --- TITLE ---
 \title{
-    \color{neonpink}
+    \color{brandblue}
     \textbf{\Huge NEWSLETTER} \\
     \vspace{0.5cm}
     \Large \textit{Enterprise-Grade Flask Subscription Platform} \\
-    \large \textcolor{neoncyan}{Project Documentation for CM Corp}
+    \large \textcolor{accentblue}{Project Documentation for CM Corp}
 }
 \author{\textbf{Team DePLOJ} \\
 Arbiona, Claude, Fredrick, Martina, Mikaela, Nahrin}
@@ -163,13 +221,13 @@ Arbiona, Claude, Fredrick, Martina, Mikaela, Nahrin}
 \vspace{2cm}
 \begin{center}
 	\begin{tikzpicture}
-		\node[draw=neonpink, line width=2mm, rounded corners=1cm, fill=pastelpink!10, minimum width=8cm, minimum height=2.5cm]
+		\node[draw=brandblue, line width=2mm, rounded corners=1cm, fill=lightblue!10, minimum width=8cm, minimum height=2.5cm]
 		{\Large \faCloud \ \ \faEnvelope \ \ \faDocker \\[0.5cm] \large \textit{Enterprise-Grade Subscription Platform}};
 	\end{tikzpicture}
 \end{center}
 \vspace{3cm}
 \begin{center}
-	\textbf{\textcolor{neoncyan}{CM Corp Project Documentation}}
+	\textbf{\textcolor{accentblue}{CM Corp Project Documentation}}
 \end{center}
 \vfill
 \begin{center}
@@ -178,7 +236,7 @@ Arbiona, Claude, Fredrick, Martina, Mikaela, Nahrin}
 \newpage
 
 \begin{center}
-	\textbf{\LARGE \textcolor{neonpink}{Contents}}
+	\textbf{\LARGE \textcolor{brandblue}{Contents}}
 \end{center}
 \vspace{1cm}
 \tableofcontents
@@ -208,12 +266,12 @@ Our platform exceeds industry standards across all key performance indicators, d
 \begin{center}
 	\begin{tabular}{@{}lccc@{}}
 		\toprule
-		\textbf{Metric} & \textbf{Target} & \textbf{Current} & \textbf{Status}                  \\
+		\textbf{Metric} & \textbf{Target} & \textbf{Current} & \textbf{Status}                   \\
 		\midrule
-		Uptime          & 99.9\%          & 99.99\%          & \textcolor{neonpink}{\checkmark} \\
-		Response Time   & $<200$ms        & 45ms             & \textcolor{neonpink}{\checkmark} \\
-		Build Time      & $<5$min         & 2min             & \textcolor{neonpink}{\checkmark} \\
-		Deployment Time & $<10$min        & 3min             & \textcolor{neonpink}{\checkmark} \\
+		Uptime          & 99.9\%          & 99.99\%          & \textcolor{brandblue}{\checkmark} \\
+		Response Time   & $<200$ms        & 45ms             & \textcolor{brandblue}{\checkmark} \\
+		Build Time      & $<5$min         & 2min             & \textcolor{brandblue}{\checkmark} \\
+		Deployment Time & $<10$min        & 3min             & \textcolor{brandblue}{\checkmark} \\
 		\bottomrule
 	\end{tabular}
 \end{center}
@@ -282,11 +340,11 @@ The platform is designed to work seamlessly across major operating systems and d
 \begin{center}
 	\begin{tabular}{@{}lllc@{}}
 		\toprule
-		\textbf{OS} & \textbf{Version} & \textbf{Shell} & \textbf{Status}                  \\
+		\textbf{OS} & \textbf{Version} & \textbf{Shell} & \textbf{Status}                   \\
 		\midrule
-		macOS       & Monterey (12.x+) & zsh/bash       & \textcolor{neonpink}{\checkmark} \\
-		Linux       & CachyOS          & fish/zsh       & \textcolor{neonpink}{\checkmark} \\
-		Windows     & 11               & PowerShell     & \textcolor{neonpink}{\checkmark} \\
+		macOS       & Monterey (12.x+) & zsh/bash       & \textcolor{brandblue}{\checkmark} \\
+		Linux       & CachyOS          & fish/zsh       & \textcolor{brandblue}{\checkmark} \\
+		Windows     & 11               & PowerShell     & \textcolor{brandblue}{\checkmark} \\
 		\bottomrule
 	\end{tabular}
 \end{center}
@@ -302,8 +360,8 @@ The platform is designed to work seamlessly across major operating systems and d
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=1.5cm,
-			every node/.style={fill=pastelcyan!10, draw=neoncyan, rounded corners, minimum width=2.5cm, minimum height=0.8cm},
-			arrow/.style={thick,->,>=stealth, draw=neonpink}
+			every node/.style={fill=lightblue!10, draw=accentblue, rounded corners, minimum width=2.5cm, minimum height=0.8cm},
+			arrow/.style={thick,->,>=stealth, draw=brandblue}
 		]
 
 		\node (user) at (-3,2) {\faUser\ User};
@@ -365,7 +423,7 @@ newsletter/
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.8cm,
-			box/.style={fill=pastelpink!10, draw=neonpink, rounded corners, minimum width=3cm, minimum height=0.8cm, font=\bfseries\small},
+			box/.style={fill=lightblue!10, draw=brandblue, rounded corners, minimum width=3cm, minimum height=0.8cm, font=\bfseries\small},
 			arrow/.style={thick,->,>=stealth}
 		]
 
@@ -375,13 +433,13 @@ newsletter/
 
 		\node (newsletters) at (5, 1) [box] {\faNewspaper\ newsletters};
 
-		\draw[arrow, draw=neonpink] (users) -- node[left] {1:N} (subscribers);
+		\draw[arrow, draw=brandblue] (users) -- node[left] {1:N} (subscribers);
 
-		\draw[arrow, draw=neoncyan] (subscribers) -- node[above right] {M:N} (newsletters);
+		\draw[arrow, draw=accentblue] (subscribers) -- node[above right] {M:N} (newsletters);
 
-		\node (subs) at (0, -1.5) [box, draw=neoncyan, fill=pastelcyan!10] {\faArrowsH\ subscriptions};
+		\node (subs) at (0, -1.5) [box, draw=accentblue, fill=lightblue!10] {\faArrowsH\ subscriptions};
 
-		\draw[arrow, draw=neonpink, dashed] (subscribers) -- (subs);
+		\draw[arrow, draw=brandblue, dashed] (subscribers) -- (subs);
 
 	\end{tikzpicture}
 \end{center}
@@ -404,8 +462,8 @@ The pipeline follows a sequential flow that ensures each stage completes success
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.3cm,
-			startstop/.style={rectangle, rounded corners, fill=sweettea!20, draw=sweettea!60!black, minimum width=2.2cm, minimum height=0.7cm},
-			arrow/.style={thick,->,>=stealth, draw=neonpink}
+			startstop/.style={rectangle, rounded corners, fill=softgray, draw=mediumgray, minimum width=2.2cm, minimum height=0.7cm},
+			arrow/.style={thick,->,>=stealth, draw=brandblue}
 		]
 
 		\node (push) [startstop] {\faGit\ \textbf{Code Push}};
@@ -468,9 +526,9 @@ The GitHub Actions workflow defines the entire CI/CD process as code, ensuring r
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.3cm,
-			visitor/.style={rectangle, rounded corners, fill=pastelcyan!20, draw=neoncyan, minimum width=2.5cm, minimum height=0.7cm},
-			action/.style={rectangle, rounded corners, fill=pastelpink!20, draw=neonpink, minimum width=2.5cm, minimum height=0.7cm},
-			arrow/.style={thick,->,>=stealth, draw=neonpink}
+			visitor/.style={rectangle, rounded corners, fill=lightblue!20, draw=accentblue, minimum width=2.5cm, minimum height=0.7cm},
+			action/.style={rectangle, rounded corners, fill=lightblue!30, draw=brandblue, minimum width=2.5cm, minimum height=0.7cm},
+			arrow/.style={thick,->,>=stealth, draw=brandblue}
 		]
 
 		\node (landing) [visitor] {\faGlobe\ \textbf{Landing Page}};
@@ -503,9 +561,9 @@ The Newsletter platform implements a carefully designed conversion funnel to max
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.4cm,
-			funnel/.style={trapezoid, fill=pastelpink!20, draw=neonpink, minimum width=5cm, minimum height=0.8cm, trapezoid left angle=110, trapezoid right angle=70},
-			drop/.style={rectangle, rounded corners, fill=pastelpink!10, draw=energypink, minimum width=4cm, minimum height=0.6cm},
-			arrow/.style={thick,->,>=stealth, draw=neoncyan}
+			funnel/.style={trapezoid, fill=lightblue!20, draw=brandblue, minimum width=5cm, minimum height=0.8cm, trapezoid left angle=110, trapezoid right angle=70},
+			drop/.style={rectangle, rounded corners, fill=lightblue!10, draw=mediumgray, minimum width=4cm, minimum height=0.6cm},
+			arrow/.style={thick,->,>=stealth, draw=accentblue}
 		]
 
 		\node (start) [funnel] {\textbf{100\% - Home Page Visitors}};
@@ -549,28 +607,28 @@ The newsletter selection process provides visitors with an intuitive interface t
 	\end{enumerate}
 \end{stepbox}
 
-\needspace{10cm}
+\needspace{12cm}
 \vspace{0.5cm}
 \begin{center}
 	\begin{tikzpicture}[
-			node distance=0.4cm,
-			card/.style={rectangle, rounded corners, fill=pastelcyan!15, draw=neoncyan, minimum width=3.5cm, minimum height=0.9cm, font=\bfseries\small},
-			process/.style={rectangle, rounded corners, fill=pastelpink!20, draw=neonpink, minimum width=3cm, minimum height=0.9cm, font=\bfseries\small},
-			arrow/.style={thick,->,>=stealth, draw=neonpink}
+			node distance=0.5cm,
+			card/.style={rectangle, rounded corners, fill=lightblue!15, draw=accentblue, minimum width=3.8cm, minimum height=1cm, font=\bfseries\small},
+			process/.style={rectangle, rounded corners, fill=softgray, draw=mediumgray, minimum width=3.5cm, minimum height=1cm, font=\bfseries\small},
+			arrow/.style={thick,->,>=stealth, draw=brandblue}
 		]
 
 		\node (display) [card] {\faList\ Display Cards};
 
-		\node (kost) [card, below=0.8cm of display, xshift=-3.5cm] {\faAppleAlt\ Kost och Naringslara};
-		\node (mindset) [card, below=0.8cm of display, xshift=0cm] {\faBrain\ Mindset};
-		\node (research) [card, below=0.8cm of display, xshift=3.5cm] {\faMicroscope\ Kunskap och Forskning};
+		\node (kost) [card, below=1cm of display, xshift=-4cm] {\faAppleAlt\ Kost och Naringslara};
+		\node (mindset) [card, below=1cm of display, xshift=0cm] {\faBrain\ Mindset};
+		\node (research) [card, below=1cm of display, xshift=4cm] {\faMicroscope\ Kunskap och Forskning};
 
-		\node (workouts) [card, below=1cm of kost, xshift=1.8cm] {\faDumbbell\ Veckans Pass};
-		\node (jaine) [card, below=1cm of research, xshift=-1.8cm] {\faRobot\ Trana med Jaine};
+		\node (workouts) [card, below=1.2cm of kost, xshift=2cm] {\faDumbbell\ Veckans Pass};
+		\node (jaine) [card, below=1.2cm of research, xshift=-2cm] {\faRobot\ Trana med Jaine};
 
-		\node (validate) [process, below=1.5cm of mindset] {\faCheck\ Validate Selection};
-		\node (email) [process, below=1cm of validate] {\faAt\ Email Form};
-		\node (submit) [process, below=1cm of email] {\faPaperPlane\ Submit};
+		\node (validate) [process, below=1.8cm of mindset] {\faCheck\ Validate Selection};
+		\node (email) [process, below=1.2cm of validate] {\faAt\ Email Form};
+		\node (submit) [process, below=1.2cm of email] {\faPaperPlane\ Submit};
 
 		\draw[arrow] (display) -- (kost);
 		\draw[arrow] (display) -- (mindset);
@@ -594,9 +652,9 @@ The newsletter selection process provides visitors with an intuitive interface t
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.3cm,
-			admin/.style={rectangle, rounded corners, fill=sweettea!20, draw=sweettea!60!black, minimum width=2.5cm, minimum height=0.7cm},
-			action/.style={rectangle, rounded corners, fill=pastelpink!20, draw=neonpink, minimum width=2.5cm, minimum height=0.7cm},
-			arrow/.style={thick,->,>=stealth, draw=neonpink}
+			admin/.style={rectangle, rounded corners, fill=softgray, draw=mediumgray, minimum width=2.5cm, minimum height=0.7cm},
+			action/.style={rectangle, rounded corners, fill=lightblue!30, draw=brandblue, minimum width=2.5cm, minimum height=0.7cm},
+			arrow/.style={thick,->,>=stealth, draw=brandblue}
 		]
 
 		\node (login) [admin] {\faLock\ \textbf{Admin Login}};
@@ -666,7 +724,7 @@ The newsletter selection process provides visitors with an intuitive interface t
 		\item Clone the repository:
 		      \begin{scriptsize}
 			      \begin{verbatim}
-git clone https://github.com/deploj/newsletter.git
+git clone https://github.com/mela-malen/hello-cicd.git
 cd newsletter
 \end{verbatim}
 		      \end{scriptsize}
@@ -723,12 +781,12 @@ The \textbf{Newsletter} platform represents a complete, production-ready subscri
 \begin{center}
 	\begin{tabular}{@{}ll@{}}
 		\toprule
-		\textbf{Resource} & \textbf{Link}                                      \\
+		\textbf{Resource} & \textbf{Link}                                          \\
 		\midrule
-		Repository        & \url{https://github.com/deploj/newsletter}         \\
-		CI/CD Pipeline    & \url{https://github.com/deploj/newsletter/actions} \\
-		Azure Portal      & \url{https://portal.azure.com}                     \\
-		Documentation     & See /docs directory                                \\
+		Repository        & \url{https://github.com/mela-malen/hello-cicd}         \\
+		CI/CD Pipeline    & \url{https://github.com/mela-malen/hello-cicd/actions} \\
+		Azure Portal      & \url{https://portal.azure.com}                         \\
+		Documentation     & See /docs directory                                    \\
 		\bottomrule
 	\end{tabular}
 \end{center}
