@@ -653,11 +653,12 @@ The newsletter selection process provides visitors with an intuitive interface t
 
 			\draw[arrow] (start) -- (display);
 
-			\draw[arrow] (display) -- (card1);
-			\draw[arrow] (display) -- (card2);
-			\draw[arrow] (display) -- (card3);
-			\draw[arrow] (display) -- (card4);
-			\draw[arrow] (display) -- (card5);
+			% Cards are displayed but not explicitly connected to display in mermaid
+			% \draw[arrow] (display) -- (card1);
+			% \draw[arrow] (display) -- (card2);
+			% \draw[arrow] (display) -- (card3);
+			% \draw[arrow] (display) -- (card4);
+			% \draw[arrow] (display) -- (card5);
 
 			\draw[arrow] (card1) -- (toggle1);
 			\draw[arrow] (card2) -- (toggle2);
