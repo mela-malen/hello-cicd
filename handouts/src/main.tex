@@ -612,43 +612,43 @@ The newsletter selection process provides visitors with an intuitive interface t
 	\end{enumerate}
 \end{stepbox}
 
-\needspace{12cm}
+\needspace{11cm}
 \vspace{0.2cm}
 \begin{landscape}
 	\begin{center}
 		\begin{tikzpicture}[
 				node distance=0.4cm,
-				startstop/.style={rectangle, rounded corners, draw=brandblue, fill=lightblue!20, minimum width=2.4cm, minimum height=0.55cm, font=\bfseries\tiny},
-				process/.style={rectangle, rounded corners, draw=mediumgray, fill=softgray, minimum width=2.2cm, minimum height=0.5cm, font=\bfseries\tiny},
-				card/.style={rectangle, rounded corners, draw=accentblue, fill=lightblue!30, minimum width=2cm, minimum height=0.5cm, font=\bfseries\tiny},
+				startstop/.style={rectangle, rounded corners, draw=brandblue, fill=lightblue!20, minimum width=2.2cm, minimum height=0.5cm, font=\bfseries\tiny},
+				process/.style={rectangle, rounded corners, draw=mediumgray, fill=softgray, minimum width=2cm, minimum height=0.45cm, font=\bfseries\tiny},
+				card/.style={rectangle, rounded corners, draw=accentblue, fill=lightblue!30, minimum width=1.8cm, minimum height=0.45cm, font=\bfseries\tiny},
 				arrow/.style={thick,->,>=stealth, draw=brandblue}
 			]
 
-			\node (start) [startstop] {\faUser\ Subscribe Page};
+			\node (start) [startstop] {\faUser\ Subscribe};
 
-			\node (display) [process, below=0.6cm of start] {\faList\ Display Cards};
+			\node (display) [process, below=0.5cm of start] {\faList\ Cards};
 
-			\node (card1) [card, below=0.6cm of display, xshift=-3.5cm] {\faAppleAlt\ Kost/Nutr};
-			\node (card2) [card, below=0.6cm of display, xshift=-1.2cm] {\faBrain\ Mindset};
-			\node (card3) [card, below=0.6cm of display, xshift=1.2cm] {\faMicroscope\ Knowledge};
-			\node (card4) [card, below=0.6cm of display, xshift=3.5cm] {\faDumbbell\ Workouts};
-			\node (card5) [card, below=1.4cm of display, xshift=0cm] {\faRobot\ AI Training};
+			\node (card1) [card, below=0.5cm of display, xshift=-4.5cm] {\faAppleAlt\ Kost/Nutr};
+			\node (card2) [card, below=0.5cm of display, xshift=-1.5cm] {\faBrain\ Mindset};
+			\node (card3) [card, below=0.5cm of display, xshift=1.5cm] {\faMicroscope\ Knowledge};
+			\node (card4) [card, below=0.5cm of display, xshift=4.5cm] {\faDumbbell\ Workouts};
+			\node (card5) [card, below=1.2cm of display, xshift=0cm] {\faRobot\ AI Training};
 
-			\node (toggle1) [process, below=0.6cm of card1] {\faToggleOn\ Toggle};
-			\node (toggle2) [process, below=0.6cm of card2] {\faToggleOn\ Toggle};
-			\node (toggle3) [process, below=0.6cm of card3] {\faToggleOn\ Toggle};
-			\node (toggle4) [process, below=0.6cm of card4] {\faToggleOn\ Toggle};
-			\node (toggle5) [process, below=0.6cm of card5] {\faToggleOn\ Toggle};
+			\node (toggle1) [process, below=0.5cm of card1] {\faToggleOn\ Toggle};
+			\node (toggle2) [process, below=0.5cm of card2] {\faToggleOn\ Toggle};
+			\node (toggle3) [process, below=0.5cm of card3] {\faToggleOn\ Toggle};
+			\node (toggle4) [process, below=0.5cm of card4] {\faToggleOn\ Toggle};
+			\node (toggle5) [process, below=0.5cm of card5] {\faToggleOn\ Toggle};
 
-			\node (validate) [process, below=1.4cm of card3, xshift=-2.5cm] {\faCheck\ Validate};
+			\node (validate) [process, below=1.2cm of card3, xshift=-3.5cm] {\faCheck\ Validate};
 
-			\node (warning) [process, right=2cm of validate] {\faExclamationTriangle\ Select 1+};
+			\node (warning) [process, right=2.5cm of validate] {\faExclamationTriangle\ Select 1+};
 
-			\node (email) [process, below=1cm of validate] {\faAt\ Email};
+			\node (email) [process, below=0.8cm of validate] {\faAt\ Email};
 
-			\node (submit) [process, below=0.6cm of email] {\faPaperPlane\ Submit};
+			\node (submit) [process, below=0.5cm of email] {\faPaperPlane\ Submit};
 
-			\node (success) [startstop, below=0.6cm of submit] {\faSmile\ Welcome};
+			\node (success) [startstop, below=0.5cm of submit] {\faSmile\ Welcome};
 
 			\draw[arrow] (start) -- (display);
 
@@ -671,7 +671,7 @@ The newsletter selection process provides visitors with an intuitive interface t
 			\draw[arrow] (toggle5) -- (validate);
 
 			\draw[arrow] (validate) -- (warning);
-			\draw[arrow, dashed] (warning) -- ++(0,1.5cm) -| (display);
+			\draw[arrow, dashed] (warning) -- ++(0,1.2cm) -| (display);
 
 			\draw[arrow] (validate) -- (email);
 			\draw[arrow] (email) -- (submit);

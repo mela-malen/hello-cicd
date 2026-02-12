@@ -85,7 +85,7 @@ class LaTeXTestFramework:
         # Newsletter Selection Journey diagram tests
         self.test_content_present("Newsletter Selection has landscape", r"\\begin\{landscape\}")
         self.test_content_present("Newsletter Selection has TikZ diagram", r"\\begin\{tikzpicture")
-        self.test_content_present("Newsletter Selection has visitor node", r"Subscribe Page")
+        self.test_content_present("Newsletter Selection has visitor node", r"Subscribe")
         self.test_content_present("Newsletter Selection has validate node", r"Validate")
         self.test_content_present("Newsletter Selection has submit node", r"Submit")
         self.test_content_present("Newsletter Selection has welcome node", r"Welcome")
