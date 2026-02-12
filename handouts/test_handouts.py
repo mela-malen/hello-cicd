@@ -64,7 +64,6 @@ class LaTeXTestFramework:
         self.test_content_present("Visitor journey section", r"Visitor Journey")
         self.test_content_present("Administrator journey section", r"Administrator Journey")
         self.test_content_present("Conversion funnel section", r"Conversion Funnel")
-        self.test_content_present("Newsletter selection section", r"Newsletter Selection")
 
         # Section count test
         self.test_min_sections(7)
@@ -81,18 +80,6 @@ class LaTeXTestFramework:
 
         # Data models diagram test
         self.test_content_present("Data models diagram has proper node structure", r"faUser.*admins")
-
-        # Newsletter Selection Journey diagram tests
-        self.test_content_present("Newsletter Selection has landscape", r"\\begin\{landscape\}")
-        self.test_content_present("Newsletter Selection has TikZ diagram", r"\\begin\{tikzpicture")
-        self.test_content_present("Newsletter Selection has visitor node", r"Subscribe")
-        self.test_content_present("Newsletter Selection has validate node", r"Validate")
-        self.test_content_present("Newsletter Selection has submit node", r"Submit")
-        self.test_content_present("Newsletter Selection has welcome node", r"Welcome")
-        self.test_content_present("Newsletter Selection has newsletter cards", r"Kost|Nutrition|Workouts|AI Training")
-
-        # TikZ structure tests
-        self.test_tikz_node_count("Newsletter diagram", r"\\subsection\{Newsletter Selection", 15)
 
         # LaTeX compilation test
         self.test_latex_compilation()

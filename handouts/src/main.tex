@@ -18,7 +18,6 @@
 \usepackage[first=1, last=6]{lcg}% For random numbers
 \usepackage{totcount}
 \usepackage{graphicx}
-\usepackage{pdflscape}
 
 % --- ADDED VERTICAL SPACING ---
 \usepackage{setspace}
@@ -597,92 +596,6 @@ The Newsletter platform implements a carefully designed conversion funnel to max
 	\end{tikzpicture}
 \end{center}
 \vspace{1cm}
-
-\subsection{Newsletter Selection Journey}
-
-The newsletter selection process provides visitors with an intuitive interface to customize their subscription preferences. Users can explore each newsletter offering through visually appealing cards before making their selections.
-
-\begin{stepbox}{Selection Flow}
-	\begin{enumerate}
-		\item \textbf{Card Display} - Visual cards display each newsletter with title, description, and category icon
-		\item \textbf{Topic Toggle} - Users toggle each newsletter on or off based on interests
-		\item \textbf{Validation} - System ensures at least one newsletter is selected
-		\item \textbf{Email Entry} - Valid selection proceeds to email address input
-		\item \textbf{Confirmation} - Submit subscription and receive welcome message
-	\end{enumerate}
-\end{stepbox}
-
-\needspace{10cm}
-\vspace{0.2cm}
-\begin{landscape}
-	\begin{center}
-		\begin{tikzpicture}[
-				node distance=0.35cm,
-				startstop/.style={rectangle, rounded corners, draw=brandblue, fill=lightblue!20, minimum width=2cm, minimum height=0.45cm, font=\bfseries\tiny},
-				process/.style={rectangle, rounded corners, draw=mediumgray, fill=softgray, minimum width=1.8cm, minimum height=0.4cm, font=\bfseries\tiny},
-				card/.style={rectangle, rounded corners, draw=accentblue, fill=lightblue!30, minimum width=1.6cm, minimum height=0.4cm, font=\bfseries\tiny},
-				arrow/.style={thick,->,>=stealth, draw=brandblue},
-				curved/.style={thick,->,>=stealth, draw=brandblue, bend left=15}
-			]
-
-			\node (start) [startstop] {\faUser\ Subscribe};
-
-			\node (display) [process, below=0.5cm of start] {\faList\ Cards};
-
-			\node (card1) [card, below=0.5cm of display, xshift=-6.5cm] {\faAppleAlt\ Kost/Nutr};
-			\node (card2) [card, below=0.5cm of display, xshift=-2.2cm] {\faBrain\ Mindset};
-			\node (card3) [card, below=0.5cm of display, xshift=2.2cm] {\faMicroscope\ Knowledge};
-			\node (card4) [card, below=0.5cm of display, xshift=6.5cm] {\faDumbbell\ Workouts};
-			\node (card5) [card, below=1.2cm of display, xshift=0cm] {\faRobot\ AI Training};
-
-			\node (toggle1) [process, below=0.5cm of card1] {\faToggleOn\ Toggle};
-			\node (toggle2) [process, below=0.5cm of card2] {\faToggleOn\ Toggle};
-			\node (toggle3) [process, below=0.5cm of card3] {\faToggleOn\ Toggle};
-			\node (toggle4) [process, below=0.5cm of card4] {\faToggleOn\ Toggle};
-			\node (toggle5) [process, below=0.5cm of card5] {\faToggleOn\ Toggle};
-
-			\node (validate) [process, below=2cm of toggle3, xshift=-6cm] {\faCheck\ Validate};
-
-			\node (warning) [process, right=4cm of validate] {\faExclamationTriangle\ Select 1+};
-
-			\node (email) [process, below=1.5cm of validate] {\faAt\ Email};
-
-			\node (submit) [process, below=1cm of email] {\faPaperPlane\ Submit};
-
-			\node (success) [startstop, below=1cm of submit] {\faSmile\ Welcome};
-
-			\draw[arrow] (start) -- (display);
-
-			% Cards are displayed but not explicitly connected to display in mermaid
-			% \draw[arrow] (display) -- (card1);
-			% \draw[arrow] (display) -- (card2);
-			% \draw[arrow] (display) -- (card3);
-			% \draw[arrow] (display) -- (card4);
-			% \draw[arrow] (display) -- (card5);
-
-			\draw[arrow] (card1) -- (toggle1);
-			\draw[arrow] (card2) -- (toggle2);
-			\draw[arrow] (card3) -- (toggle3);
-			\draw[arrow] (card4) -- (toggle4);
-			\draw[arrow] (card5) -- (toggle5);
-
-			\draw[curved] (toggle1) to[out=270, in=90] (validate);
-			\draw[curved] (toggle2) to[out=270, in=90] (validate);
-			\draw[arrow] (toggle3) -- (validate);
-			\draw[curved] (toggle4) to[out=270, in=90] (validate);
-			\draw[curved] (toggle5) to[out=270, in=90] (validate);
-
-			\draw[arrow] (validate) -- node[left] {None} (warning);
-			\draw[curved, bend left=45, dashed] (warning) to[out=180, in=180] (display);
-
-			\draw[arrow] (validate) -- (email);
-			\draw[arrow] (email) -- (submit);
-			\draw[arrow] (submit) -- (success);
-
-		\end{tikzpicture}
-	\end{center}
-\end{landscape}
-\vspace{0.5cm}
 
 \subsection{Administrator Journey}
 
