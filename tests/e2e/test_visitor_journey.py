@@ -40,6 +40,7 @@ class TestVisitorJourney:
         page.fill('input[name="email"]', "visitor1@example.com")
         page.fill('input[name="name"]', "Visitor One")
         page.click('label:has(input[name="nl_kost"])')
+        page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
@@ -56,6 +57,7 @@ class TestVisitorJourney:
         page.click('label:has(input[name="nl_kunskap"])')
         page.click('label:has(input[name="nl_veckans_pass"])')
         page.click('label:has(input[name="nl_jaine"])')
+        page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
@@ -112,6 +114,7 @@ class TestVisitorJourney:
         page.fill('input[name="email"]', "visitor3@example.com")
         page.fill('input[name="name"]', "Visitor Three")
         page.click('label:has(input[name="nl_kost"])')
+        page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
         back_link = page.locator("a:has-text('Back to Home')")
