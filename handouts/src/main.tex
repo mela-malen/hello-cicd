@@ -672,8 +672,8 @@ The newsletter selection process provides visitors with an intuitive interface t
 			\draw[curved] (toggle4) to[out=270, in=90] (validate);
 			\draw[curved] (toggle5) to[out=270, in=90] (validate);
 
-			\draw[arrow] (validate) -- (warning);
-			\draw[curved, bend left=30] (warning) to (display);
+			\draw[arrow] (validate) -- node[left] {None} (warning);
+			\draw[curved, bend left=45, dashed] (warning) to[out=180, in=180] (display);
 
 			\draw[arrow] (validate) -- (email);
 			\draw[arrow] (email) -- (submit);
