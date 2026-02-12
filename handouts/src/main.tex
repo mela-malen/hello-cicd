@@ -16,6 +16,7 @@
 \usetikzlibrary{positioning, calc, shapes.geometric}
 \usepackage{booktabs}
 \usepackage{placeins}
+\usepackage{float}
 \usepackage{amssymb}
 \usepackage{fancyhdr}
 \usepackage[first=1, last=6]{lcg}% For random numbers
@@ -303,10 +304,11 @@ The platform is designed to work seamlessly across major operating systems and d
 \section{Architecture Design}
 % ==========================================
 
-\FloatBarrier
+\needspace{10cm}
 \subsection{High-Level Architecture}
 
-\begin{center}
+\begin{figure}[H]
+	\centering
 	\begin{tikzpicture}[
 			node distance=1.5cm,
 			every node/.style={fill=lightblue!10, draw=accentblue, rounded corners, minimum width=2.5cm, minimum height=0.8cm},
@@ -334,7 +336,7 @@ The platform is designed to work seamlessly across major operating systems and d
 		\draw[arrow] (container) -- (sql);
 
 	\end{tikzpicture}
-\end{center}
+\end{figure}
 \needspace{5cm}
 \subsection{Project Structure}
 
@@ -365,12 +367,12 @@ newsletter/
 	\end{scriptsize}
 \end{techbox}
 
-\FloatBarrier
-\needspace{10cm}
-\subsection{Data Models}
+\needspace{12cm}
+\subsection{Data Models}\nopagebreak
 
 \vspace{0.5cm}
-\begin{center}
+\begin{figure}[H]
+	\centering
 	\begin{tikzpicture}[
 			node distance=0.8cm,
 			box/.style={fill=lightblue!10, draw=brandblue, rounded corners, minimum width=3cm, minimum height=0.8cm, font=\bfseries\small},
@@ -392,7 +394,7 @@ newsletter/
 		\draw[arrow, draw=brandblue, dashed] (subscribers) -- (subs);
 
 	\end{tikzpicture}
-\end{center}
+\end{figure}
 \vspace{1cm}
 
 % ==========================================
