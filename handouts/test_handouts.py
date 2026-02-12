@@ -47,7 +47,7 @@ class LaTeXTestFramework:
         self.test_content_present("Generation date", r"\\today|Generated:")
 
         # Build info
-        self.test_content_present("Build version in footer", r"Build:|git rev-parse")
+        self.test_content_present("Build version in footer", r"Build:")
 
         # No forbidden content
         self.test_content_absent("No 'Guru' references", r"\\faUserAstronaut|Guru")
@@ -68,6 +68,16 @@ class LaTeXTestFramework:
 
         # Section count test
         self.test_min_sections(7)
+
+        # Document structure tests
+        self.test_content_present("Project Overview section", r"\\section\{Project Overview\}")
+        self.test_content_present("Technology Stack section", r"\\section\{Technology Stack\}")
+        self.test_content_present("Architecture Design section", r"\\section\{Architecture Design\}")
+        self.test_content_present("CI/CD Pipeline section", r"\\section\{CI/CD Pipeline\}")
+        self.test_content_present("Key Features section", r"\\section\{Key Features\}")
+        self.test_content_present("Setup Instructions section", r"\\section\{Setup Instructions\}")
+        self.test_content_present("Summary section", r"\\section\{Summary\}")
+        self.test_content_present("Table of contents present", r"\\tableofcontents")
 
         # Data models diagram test
         self.test_content_present("Data models diagram has proper node structure", r"faUser.*admins")
@@ -151,6 +161,46 @@ class LaTeXTestFramework:
             self.failed("LaTeX compilation", "xelatex not found")
         except Exception as e:
             self.failed("LaTeX compilation", str(e))
+
+        # Test PDF page count
+        self.test_pdf_page_count()
+
+    def test_pdf_page_count(self):
+        """Test that PDF has expected number of pages."""
+        try:
+            pdf_path = self.output_dir / "main.pdf"
+            if not pdf_path.exists():
+                self.failed("PDF page count", "PDF not found")
+                return
+
+            # Try to use pdftk or pdfinfo if available
+            try:
+                result = subprocess.run(
+                    ['pdfinfo', str(pdf_path)],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if result.returncode == 0:
+                    for line in result.stdout.split('\n'):
+                        if line.startswith('Pages:'):
+                            pages = int(line.split(':')[1].strip())
+                            if pages >= 5:
+                                self.passed(f"PDF has {pages} pages (expected 5+)")
+                            else:
+                                self.failed("PDF page count", f"Only {pages} pages found, expected 5+")
+                            return
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                pass
+
+            # Fallback: check file size suggests multi-page
+            if pdf_path.stat().st_size > 100000:  # > 100KB suggests multi-page
+                self.passed("PDF file size suggests multi-page document")
+            else:
+                self.failed("PDF page count", "Could not verify page count")
+
+        except Exception as e:
+            self.failed("PDF page count", str(e))
 
     def passed(self, name: str):
         """Record a passed test."""
