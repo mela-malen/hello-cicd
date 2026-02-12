@@ -554,23 +554,23 @@ The newsletter selection process provides visitors with an intuitive interface t
 \begin{center}
 	\begin{tikzpicture}[
 			node distance=0.4cm,
-			card/.style={rectangle, rounded corners, fill=pastelcyan!15, draw=neoncyan, minimum width=3.2cm, minimum height=0.8cm},
-			process/.style={rectangle, rounded corners, fill=pastelpink!20, draw=neonpink, minimum width=2.8cm, minimum height=0.8cm},
+			card/.style={rectangle, rounded corners, fill=pastelcyan!15, draw=neoncyan, minimum width=3.5cm, minimum height=0.9cm, font=\bfseries\small},
+			process/.style={rectangle, rounded corners, fill=pastelpink!20, draw=neonpink, minimum width=3cm, minimum height=0.9cm, font=\bfseries\small},
 			arrow/.style={thick,->,>=stealth, draw=neonpink}
 		]
 
-		\node (display) [card] {\faList\ \textbf{Display Cards}};
+		\node (display) [card] {\faList\ Display Cards};
 
-		\node (kost) [card, below=0.8cm of display, xshift=-3.5cm] {\faAppleAlt\ Kost \\& Näring};
+		\node (kost) [card, below=0.8cm of display, xshift=-3.5cm] {\faAppleAlt\ Kost och Naringslara};
 		\node (mindset) [card, below=0.8cm of display, xshift=0cm] {\faBrain\ Mindset};
-		\node (research) [card, below=0.8cm of display, xshift=3.5cm] {\faMicroscope\ Kunskap \\& Forskning};
+		\node (research) [card, below=0.8cm of display, xshift=3.5cm] {\faMicroscope\ Kunskap och Forskning};
 
 		\node (workouts) [card, below=1cm of kost, xshift=1.8cm] {\faDumbbell\ Veckans Pass};
-		\node (jaine) [card, below=1cm of research, xshift=-1.8cm] {\faRobot\ Träna med Jaine};
+		\node (jaine) [card, below=1cm of research, xshift=-1.8cm] {\faRobot\ Trana med Jaine};
 
-		\node (validate) [process, below=1.5cm of mindset] {\faCheck\ \textbf{Validate Selection}};
-		\node (email) [process, below=1cm of validate] {\faAt\ \textbf{Email Form}};
-		\node (submit) [process, below=1cm of email] {\faPaperPlane\ \textbf{Submit}};
+		\node (validate) [process, below=1.5cm of mindset] {\faCheck\ Validate Selection};
+		\node (email) [process, below=1cm of validate] {\faAt\ Email Form};
+		\node (submit) [process, below=1cm of email] {\faPaperPlane\ Submit};
 
 		\draw[arrow] (display) -- (kost);
 		\draw[arrow] (display) -- (mindset);
