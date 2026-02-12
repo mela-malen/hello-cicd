@@ -42,6 +42,7 @@
 \definecolor{yellowhighlight}{RGB}{255, 215, 0}
 \definecolor{yellowlight}{RGB}{255, 245, 157}
 \definecolor{amber}{RGB}{255, 191, 0}
+\definecolor{fadedblue}{RGB}{135, 176, 213}
 
 % --- GLOBAL LAYOUT ---
 \tcbuselibrary{skins, breakable}
@@ -51,11 +52,11 @@
 % --- HEADER/FOOTER ---
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\textcolor{brandblue}{\textbf{DePLOJ}}}
-\fancyhead[R]{\texttt{Newsletter} - CM Corp}
-\fancyfoot[C]{\thepage\ / \total{page}}
-\fancyfoot[R]{\today\ | v\versionnumber}
-\fancyfoot[L]{\texttt{Build: \gitcommit}}
+\fancyhead[L]{\textcolor{fadedblue}{\textbf{DePLOJ}}}
+\fancyhead[R]{\textcolor{fadedblue}{\texttt{Newsletter} - CM Corp}}
+\fancyfoot[C]{\textcolor{fadedblue}{\thepage\ / \total{page}}}
+\fancyfoot[R]{\textcolor{fadedblue}{\today\ | v\versionnumber}}
+\fancyfoot[L]{\textcolor{fadedblue}{\texttt{Build: \gitcommit}}}
 
 % --- PAGE NUMBER TOTAL ---
 \regtotcounter{page}
