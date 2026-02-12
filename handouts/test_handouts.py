@@ -46,6 +46,9 @@ class LaTeXTestFramework:
         self.test_content_present("Version number", r"v1\.0|Version.*1\.0")
         self.test_content_present("Generation date", r"\\today|Generated:")
 
+        # Build info
+        self.test_content_present("Build version in footer", r"Build:|git rev-parse")
+
         # No forbidden content
         self.test_content_absent("No 'Guru' references", r"\\faUserAstronaut|Guru")
         self.test_content_absent("No 'parent' references", r"Parent|parent's")
