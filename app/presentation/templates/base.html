@@ -301,7 +301,9 @@
                 <a href="{{ url_for('public.index') }}" class="header__nav-link">Home</a>
                 <a href="{{ url_for('public.subscribe') }}" class="header__nav-link">Subscribe</a>
                 <a href="{{ url_for('admin.login') }}" class="header__nav-link">Admin</a>
-                <a href="#" class="header__nav-link">About</a>
+                <button id="music-toggle" class="header__nav-link" style="background:none;border:none;cursor:pointer;">
+                    🔊
+                </button>
             </nav>
         </div>
     </header>
@@ -319,5 +321,79 @@
     </footer>
 
     {% block scripts %}{% endblock %}
+    <audio id="bg-music" loop>
+        <source src="{{ url_for('static', filename='audio/background.mp3') }}" type="audio/mpeg">
+    </audio>
+    <script>
+        const music = document.getElementById('bg-music');
+        const toggle = document.getElementById('music-toggle');
+        let playing = false;
+        let fadeInterval = null;
+        let listenersAttached = false;
+
+        function fadeIn(audio, duration) {
+            audio.volume = 0;
+            audio.play().catch(() => {});
+            const steps = 40;
+            const increment = 1 / steps;
+            const stepTime = duration / steps;
+            fadeInterval = setInterval(() => {
+                if (audio.volume < 1) {
+                    audio.volume = Math.min(audio.volume + increment, 1);
+                } else {
+                    clearInterval(fadeInterval);
+                }
+            }, stepTime);
+        }
+
+        function fadeOut(audio, duration) {
+            clearInterval(fadeInterval);
+            const steps = 40;
+            const startVolume = audio.volume;
+            const decrement = startVolume / steps;
+            const stepTime = duration / steps;
+            fadeInterval = setInterval(() => {
+                if (audio.volume > 0) {
+                    audio.volume = Math.max(audio.volume - decrement, 0);
+                } else {
+                    clearInterval(fadeInterval);
+                    audio.pause();
+                    audio.volume = 0;
+                }
+            }, stepTime);
+        }
+
+        function updateToggle() {
+            if (toggle) {
+                toggle.textContent = playing ? '🔊' : '🔇';
+            }
+        }
+
+        function initMusic() {
+            const wasPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
+            if (wasPlaying && music.paused) {
+                fadeIn(music, 4000);
+                playing = true;
+                updateToggle();
+            }
+
+            if (toggle && !listenersAttached) {
+                toggle.addEventListener('click', () => {
+                    if (playing) {
+                        fadeOut(music, 1000);
+                        toggle.textContent = '🔇';
+                    } else {
+                        fadeIn(music, 4000);
+                        toggle.textContent = '🔊';
+                    }
+                    playing = !playing;
+                    localStorage.setItem('bgMusicPlaying', playing);
+                });
+                listenersAttached = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initMusic);
+    </script>
 </body>
 </html>

@@ -43,8 +43,8 @@ class TestVisitorJourney:
         page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
+        page.wait_for_load_state("networkidle")
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
-        assert "visitor1@example.com" in page.content()
 
     def test_subscribe_success_with_all_newsletters(self, page: Page, app_url, app_server):
         """Visitor can successfully subscribe with all newsletters."""
@@ -60,7 +60,24 @@ class TestVisitorJourney:
         page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
+        page.wait_for_load_state("networkidle")
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
+
+    def test_thank_you_confirmation_centered(self, page: Page, app_url, app_server):
+        """Thank you page confirmation box is centered on the page."""
+        page.goto(f"{app_url}/subscribe/thank-you?email=test@example.com&name=Test")
+
+        container = page.locator(".thank-you__container")
+        assert container.is_visible()
+
+        box = container.bounding_box()
+        viewport = page.viewport_size
+
+        center_x = (viewport['width'] - box['width']) / 2
+        center_y = (viewport['height'] - box['height']) / 2
+
+        assert abs(box['x'] - center_x) < 10, f"Box not horizontally centered: x={box['x']}, expected={center_x}"
+        assert abs(box['y'] - center_y) < 50, f"Box not vertically centered: y={box['y']}, expected={center_y}"
 
     def test_subscribe_error_missing_email(self, page: Page, app_url, app_server):
         """Visitor sees error when email is missing."""

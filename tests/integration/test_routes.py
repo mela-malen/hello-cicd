@@ -16,7 +16,7 @@ class TestSubscribeRoutes:
                 "nl_kost": "1",
                 "nl_mindset": "1",
             },
-            follow_redirects=False,
+            follow_redirects=True,
         )
         assert response.status_code == 200
         assert b"Thank" in response.data or b"In!" in response.data
@@ -33,7 +33,7 @@ class TestSubscribeRoutes:
                 "nl_veckans_pass": "1",
                 "nl_jaine": "1",
             },
-            follow_redirects=False,
+            follow_redirects=True,
         )
         assert response.status_code == 200
         assert b"Thank" in response.data or b"In!" in response.data

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, redirect, url_for
 import logging
 
 from app.business.services.subscription_service import SubscriptionService
@@ -18,6 +18,13 @@ def index():
 @bp.route("/subscribe")
 def subscribe():
     return render_template("subscribe.html")
+
+
+@bp.route("/subscribe/thank-you")
+def subscribe_thank_you():
+    email = request.args.get('email', '')
+    name = request.args.get('name', '')
+    return render_template("thank_you.html", email=email, name=name)
 
 
 @bp.route("/subscribe/confirm", methods=["POST"])
@@ -54,9 +61,4 @@ def subscribe_confirm():
             newsletters=newsletters,
         )
 
-    return render_template(
-        "thank_you.html",
-        email=result.subscriber.email,
-        name=result.subscriber.name,
-        newsletters=result.subscriber.get_newsletters(),
-    )
+    return redirect(url_for('public.subscribe_thank_you', email=result.subscriber.email, name=result.subscriber.name))
