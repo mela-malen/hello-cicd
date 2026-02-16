@@ -77,6 +77,7 @@ def _run_migration():
 def _ensure_admin_user():
     """Ensure default admin user exists."""
     from .data.models import User
+    import logging
     
     admin_username = os.environ.get("ADMIN_USERNAME", "admin")
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
@@ -86,33 +87,22 @@ def _ensure_admin_user():
             SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
             WHERE TABLE_NAME = 'users'
         """))
-        if not result.fetchone():
-            db.session.execute(text("""
-                CREATE TABLE users (
-                    id INTEGER PRIMARY KEY IDENTITY(1,1),
-                    username NVARCHAR(80) UNIQUE NOT NULL,
-                    password_hash NVARCHAR(256) NOT NULL,
-                    is_active BIT DEFAULT 1,
-                    created_at DATETIME DEFAULT GETDATE()
-                )
-            """))
-            db.session.commit()
-            logger.info("Created users table")
+        table_exists = result.fetchone() is not None
+        logging.warning(f"Users table exists: {table_exists}")
     except Exception as e:
-        db.session.rollback()
-        logger.warning(f"Could not check/create users table: {e}")
+        logging.warning(f"Could not check users table: {e}")
     
     try:
         existing_user = User.query.filter_by(username=admin_username).first()
         if existing_user:
-            logger.info(f"Admin user already exists: {admin_username}")
+            logging.warning(f"Admin user already exists: {admin_username}")
             return
         
         admin_user = User(username=admin_username)
         admin_user.set_password(admin_password)
         db.session.add(admin_user)
         db.session.commit()
-        logger.info(f"Created default admin user: {admin_username}")
+        logging.warning(f"Created default admin user: {admin_username}")
     except Exception as e:
         db.session.rollback()
-        logger.error(f"Failed to create admin user: {e}")
+        logging.error(f"Failed to create admin user: {e}")

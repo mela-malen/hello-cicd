@@ -39,8 +39,11 @@ def login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
+        import logging
         try:
+            logging.warning(f"Attempting login for user: {username}")
             user = User.query.filter_by(username=username).first()
+            logging.warning(f"User found: {user}")
             if user and user.check_password(password):
                 session["admin_logged_in"] = True
                 session["admin_username"] = username
@@ -48,7 +51,6 @@ def login():
             else:
                 error = "Invalid username or password"
         except Exception as e:
-            import logging
             logging.error(f"Login error: {e}")
             error = "Login failed. Please try again."
 
