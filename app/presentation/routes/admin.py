@@ -39,13 +39,18 @@ def login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            session["admin_logged_in"] = True
-            session["admin_username"] = username
-            return redirect(url_for("admin.subscribers"))
-        else:
-            error = "Invalid username or password"
+        try:
+            user = User.query.filter_by(username=username).first()
+            if user and user.check_password(password):
+                session["admin_logged_in"] = True
+                session["admin_username"] = username
+                return redirect(url_for("admin.subscribers"))
+            else:
+                error = "Invalid username or password"
+        except Exception as e:
+            import logging
+            logging.error(f"Login error: {e}")
+            error = "Login failed. Please try again."
 
     return render_template("admin/login.html", error=error)
 
