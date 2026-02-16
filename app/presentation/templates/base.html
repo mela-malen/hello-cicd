@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         /* CSS Reset and Base Styles */
         *, *::before, *::after {
@@ -284,7 +285,7 @@
         {% block extra_css %}{% endblock %}
     </style>
     </head>
-<body>
+<body hx-boost="true">
     <header class="header">
         <div class="header__container">
             <a href="/" class="header__logo">
@@ -329,6 +330,7 @@
         const toggle = document.getElementById('music-toggle');
         let playing = false;
         let fadeInterval = null;
+        let musicInitialized = false;
 
         function fadeIn(audio, duration) {
             audio.volume = 0;
@@ -362,22 +364,40 @@
             }, stepTime);
         }
 
-        window.addEventListener('load', () => {
-            fadeIn(music, 4000);
-            playing = true;
-            toggle.textContent = '🔊';
-        });
-
-        toggle.addEventListener('click', () => {
-            if (playing) {
-                fadeOut(music, 1000);
-                toggle.textContent = '🔇';
-            } else {
-                fadeIn(music, 4000);
-                toggle.textContent = '🔊';
+        function updateToggle() {
+            if (toggle) {
+                toggle.textContent = playing ? '🔊' : '🔇';
             }
-            playing = !playing;
-        });
+        }
+
+        function initMusic() {
+            if (musicInitialized) return;
+            musicInitialized = true;
+
+            const wasPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
+            if (wasPlaying && music.paused) {
+                fadeIn(music, 4000);
+                playing = true;
+                updateToggle();
+            }
+
+            if (toggle) {
+                toggle.addEventListener('click', () => {
+                    if (playing) {
+                        fadeOut(music, 1000);
+                        toggle.textContent = '🔇';
+                    } else {
+                        fadeIn(music, 4000);
+                        toggle.textContent = '🔊';
+                    }
+                    playing = !playing;
+                    localStorage.setItem('bgMusicPlaying', playing);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initMusic);
+        document.body.addEventListener('htmx:afterSwap', initMusic);
     </script>
 </body>
 </html>
