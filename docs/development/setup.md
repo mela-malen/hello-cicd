@@ -310,6 +310,27 @@ docker-compose down
 
 ---
 
+## 🔊 Background Music (Optional)
+
+The homepage features a toggleable background music player.
+
+### Setup
+
+```bash
+# Create audio directory
+mkdir -p app/presentation/static/audio
+
+# Add your MP3 file
+# Place at: app/presentation/static/audio/background.mp3
+```
+
+### Usage
+
+- Click the speaker icon (🔊) in the header to play/pause
+- Note: Browsers require user interaction before playing audio
+
+---
+
 ## 🚨 Troubleshooting
 
 ### Common Issues

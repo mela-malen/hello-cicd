@@ -45,15 +45,26 @@ nav_order: 1
 git clone https://github.com/your-org/hello-cicd.git
 cd hello-cicd
 
+# Add background music (optional)
+# Place at: app/presentation an MP3 file/static/audio/background.mp3
+
 # Setup development environment
 ./scripts/setup.sh
 
 # Run locally
 flask run
-
-# Build Docker image
-docker build -t hello-cicd:latest .
 ```
+
+---
+
+## 🔊 Background Music
+
+The homepage features a toggleable background music player. To enable it:
+
+1. Add an MP3 file at `app/presentation/static/audio/background.mp3`
+2. Click the speaker icon (🔊) in the header to play/pause
+
+Note: Browsers require user interaction before playing audio, so the music won't auto-play.
 
 ---
 

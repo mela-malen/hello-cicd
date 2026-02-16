@@ -301,7 +301,9 @@
                 <a href="{{ url_for('public.index') }}" class="header__nav-link">Home</a>
                 <a href="{{ url_for('public.subscribe') }}" class="header__nav-link">Subscribe</a>
                 <a href="{{ url_for('admin.login') }}" class="header__nav-link">Admin</a>
-                <a href="#" class="header__nav-link">About</a>
+                <button id="music-toggle" class="header__nav-link" style="background:none;border:none;cursor:pointer;">
+                    🔊
+                </button>
             </nav>
         </div>
     </header>
@@ -319,5 +321,23 @@
     </footer>
 
     {% block scripts %}{% endblock %}
+    <audio id="bg-music" loop>
+        <source src="{{ url_for('static', filename='audio/background.mp3') }}" type="audio/mpeg">
+    </audio>
+    <script>
+        const music = document.getElementById('bg-music');
+        const toggle = document.getElementById('music-toggle');
+        let playing = false;
+        toggle.addEventListener('click', () => {
+            if (playing) {
+                music.pause();
+                toggle.textContent = '🔇';
+            } else {
+                music.play().catch(() => {});
+                toggle.textContent = '🔊';
+            }
+            playing = !playing;
+        });
+    </script>
 </body>
 </html>
