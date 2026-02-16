@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass, field
+from urllib.parse import quote_plus
 
 
 def get_database_uri() -> str:
@@ -15,9 +16,9 @@ def get_database_uri() -> str:
             driver = os.environ.get("DB_DRIVER", "pymssql")
             if driver == "pyodbc":
                 params = "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
-                return f"mssql+pyodbc://{db_username}:{db_password}@{db_server}/{db_name}?{params}"
+                return f"mssql+pyodbc://{quote_plus(db_username)}:{quote_plus(db_password)}@{db_server}/{db_name}?{params}"
             else:
-                return f"mssql+pymssql://{db_username}:{db_password}@{db_server}/{db_name}"
+                return f"mssql+pymssql://{quote_plus(db_username)}:{quote_plus(db_password)}@{db_server}/{db_name}?charset=utf8"
 
     return "sqlite:///:memory:"
 
