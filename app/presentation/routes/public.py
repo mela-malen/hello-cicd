@@ -20,6 +20,11 @@ def subscribe():
     return render_template("subscribe.html")
 
 
+@bp.route("/subscribe/thank-you")
+def subscribe_thank_you():
+    return render_template("thank_you.html")
+
+
 @bp.route("/subscribe/confirm", methods=["POST"])
 def subscribe_confirm():
     email = request.form.get("email", "")
@@ -54,9 +59,10 @@ def subscribe_confirm():
             newsletters=newsletters,
         )
 
-    return render_template(
+    response = render_template(
         "thank_you.html",
         email=result.subscriber.email,
         name=result.subscriber.name,
         newsletters=result.subscriber.get_newsletters(),
     )
+    return response, 200, {"HX-Redirect": "/subscribe/thank-you"}
