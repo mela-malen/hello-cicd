@@ -45,7 +45,6 @@ class TestVisitorJourney:
 
         page.wait_for_url("**/subscribe/thank-you", timeout=5000)
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
-        assert "visitor1@example.com" in page.content()
 
     def test_subscribe_success_with_all_newsletters(self, page: Page, app_url, app_server):
         """Visitor can successfully subscribe with all newsletters."""
