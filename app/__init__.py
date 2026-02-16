@@ -25,6 +25,7 @@ def create_app(config_name: str | None = None) -> Flask:
     with app.app_context():
         try:
             from .data.models import User, Subscriber
+            
             db.create_all()
             logger.info("Database tables created successfully")
         except Exception as e:
@@ -79,6 +80,27 @@ def _ensure_admin_user():
     
     admin_username = os.environ.get("ADMIN_USERNAME", "admin")
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
+    
+    try:
+        result = db.session.execute(text("""
+            SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_NAME = 'users'
+        """))
+        if not result.fetchone():
+            db.session.execute(text("""
+                CREATE TABLE users (
+                    id INTEGER PRIMARY KEY IDENTITY(1,1),
+                    username NVARCHAR(80) UNIQUE NOT NULL,
+                    password_hash NVARCHAR(256) NOT NULL,
+                    is_active BIT DEFAULT 1,
+                    created_at DATETIME DEFAULT GETDATE()
+                )
+            """))
+            db.session.commit()
+            logger.info("Created users table")
+    except Exception as e:
+        db.session.rollback()
+        logger.warning(f"Could not check/create users table: {e}")
     
     try:
         existing_user = User.query.filter_by(username=admin_username).first()
