@@ -65,11 +65,16 @@ def logout():
 @login_required
 def subscribers():
     """Display list of all newsletter subscribers."""
+    import logging
     sort_by = request.args.get("sort", "date_desc")
     newsletter_filter = request.args.get("newsletter", None)
 
-    service = SubscriptionService()
-    all_subscribers = service.get_all_subscribers(sort_by, newsletter_filter)
+    try:
+        service = SubscriptionService()
+        all_subscribers = service.get_all_subscribers(sort_by, newsletter_filter)
+    except Exception as e:
+        logging.error(f"Error fetching subscribers: {e}")
+        all_subscribers = []
 
     return render_template(
         "admin/subscribers.html",
