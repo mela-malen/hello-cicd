@@ -24,6 +24,7 @@ def create_app(config_name: str | None = None) -> Flask:
 
     with app.app_context():
         try:
+            from .data.models import User, Subscriber
             db.create_all()
             logger.info("Database tables created successfully")
             
