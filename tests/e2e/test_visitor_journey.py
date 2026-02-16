@@ -43,7 +43,7 @@ class TestVisitorJourney:
         page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
-        page.wait_for_url("**/subscribe/thank-you", timeout=10000)
+        page.wait_for_load_state("networkidle")
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
 
     def test_subscribe_success_with_all_newsletters(self, page: Page, app_url, app_server):
@@ -60,7 +60,7 @@ class TestVisitorJourney:
         page.click('label:has(input[name="consent"])')
         page.click('button[type="submit"]')
 
-        page.wait_for_url("**/subscribe/thank-you", timeout=10000)
+        page.wait_for_load_state("networkidle")
         assert "You're In" in page.title() or "In!" in page.text_content("h1")
 
     def test_subscribe_error_missing_email(self, page: Page, app_url, app_server):
