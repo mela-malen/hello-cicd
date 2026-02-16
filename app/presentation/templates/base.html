@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/turbolinks@5.3.0/dist/turbolinks.min.js" defer></script>
     <style>
         /* CSS Reset and Base Styles */
         *, *::before, *::after {
@@ -285,7 +285,7 @@
         {% block extra_css %}{% endblock %}
     </style>
     </head>
-<body hx-boost="true">
+<body>
     <header class="header">
         <div class="header__container">
             <a href="/" class="header__logo">
@@ -322,7 +322,7 @@
     </footer>
 
     {% block scripts %}{% endblock %}
-    <audio id="bg-music" loop>
+    <audio id="bg-music" data-turbolinks-permanent loop>
         <source src="{{ url_for('static', filename='audio/background.mp3') }}" type="audio/mpeg">
     </audio>
     <script>
@@ -330,7 +330,7 @@
         const toggle = document.getElementById('music-toggle');
         let playing = false;
         let fadeInterval = null;
-        let musicInitialized = false;
+        let listenersAttached = false;
 
         function fadeIn(audio, duration) {
             audio.volume = 0;
@@ -371,8 +371,7 @@
         }
 
         function initMusic() {
-            if (musicInitialized) return;
-            musicInitialized = true;
+            if (listenersAttached && playing) return;
 
             const wasPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
             if (wasPlaying && music.paused) {
@@ -381,7 +380,7 @@
                 updateToggle();
             }
 
-            if (toggle) {
+            if (toggle && !listenersAttached) {
                 toggle.addEventListener('click', () => {
                     if (playing) {
                         fadeOut(music, 1000);
@@ -393,11 +392,12 @@
                     playing = !playing;
                     localStorage.setItem('bgMusicPlaying', playing);
                 });
+                listenersAttached = true;
             }
         }
 
         document.addEventListener('DOMContentLoaded', initMusic);
-        document.body.addEventListener('htmx:afterSwap', initMusic);
+        document.addEventListener('turbolinks:load', initMusic);
     </script>
 </body>
 </html>
