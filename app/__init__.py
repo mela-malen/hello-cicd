@@ -27,14 +27,18 @@ def create_app(config_name: str | None = None) -> Flask:
             from .data.models import User, Subscriber
             db.create_all()
             logger.info("Database tables created successfully")
-            
-            # Run migration to add missing columns
+        except Exception as e:
+            logger.warning(f"Could not create database tables: {e}")
+        
+        try:
             _run_migration()
-            
-            # Ensure admin user exists
+        except Exception as e:
+            logger.warning(f"Migration failed: {e}")
+        
+        try:
             _ensure_admin_user()
         except Exception as e:
-            logger.warning(f"Could not create database tables (may need migration): {e}")
+            logger.warning(f"Admin user setup failed: {e}")
 
     from .presentation.routes.public import bp as public_bp
     app.register_blueprint(public_bp)
@@ -78,14 +82,15 @@ def _ensure_admin_user():
     
     try:
         existing_user = User.query.filter_by(username=admin_username).first()
-        if not existing_user:
-            admin_user = User(username=admin_username)
-            admin_user.set_password(admin_password)
-            db.session.add(admin_user)
-            db.session.commit()
-            logger.info(f"Created default admin user: {admin_username}")
-        else:
+        if existing_user:
             logger.info(f"Admin user already exists: {admin_username}")
+            return
+        
+        admin_user = User(username=admin_username)
+        admin_user.set_password(admin_password)
+        db.session.add(admin_user)
+        db.session.commit()
+        logger.info(f"Created default admin user: {admin_username}")
     except Exception as e:
         db.session.rollback()
-        logger.warning(f"Could not create admin user: {e}")
+        logger.error(f"Failed to create admin user: {e}")
