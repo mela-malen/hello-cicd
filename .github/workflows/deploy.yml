@@ -71,7 +71,9 @@ jobs:
               DB_SERVER=${{ secrets.DB_SERVER }} \
               DB_NAME=${{ secrets.DB_NAME }} \
               DB_USERNAME=${{ secrets.DB_USERNAME }} \
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              ADMIN_USERNAME=deplojadmin \
+              ADMIN_PASSWORD=grupp234!
 
       - name: Verify deployment
         id: verify
